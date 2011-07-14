@@ -1,0 +1,27 @@
+<body>
+Vash -- The Visual Hash Function.
+<h3>About</h3>
+<hr/>
+<p>
+	Vash is a family of visual hashing algorithms that take data and convert it into images.  As with a hash function, the same input will always produce the same output and similar inputs will reliably produce significantly different outputs.  Generally you can use Vash anywhere you would normally want to show a hash function.  Unlike a hash function however, you can show the output to the user.  This opens up many exciting new possibilties -- see the README for examples.
+</p>
+
+<h3>Examples</h3>
+<hr/>
+<p>The example programs are short and extremely well documented.  They are the best way to learn how to use Vash in your own programs.  You can find them at:</p>
+<a href="">https://www.scm.com/path/to/example/programs</a>
+
+<h3>Algorithm ID</h3>
+<hr/>
+<h4>What is the algorithm id?:</h4>
+	<p>Although Vash only has one core mechanism, it is possible to tweak the parameters of this mechanism to achieve wildly different results.  When, at some point in the future, we want to extend Vash with ever more variety, we will need to tweak these parameters.  If we did so universally, it would not be possible to upgrade, ever.  Thus, when you want to hash some data, you must specify the specific algorithm parameters you want.  The algorithm id is a string; at the moment there are only two algorithms: "1" and "1-fast".</p>
+
+<h4>How do I use it?:</h4>
+	<p>The algorithm is a required parameter because we want you to be able to upgrade to new algorithms as they are released.  If you do not store this id with your data, then you will have to assume a single algorithm, application wide.  Instead, you should think of this value like a salt.  Store it with the data you are hashing and when you add new data to the system, you can use any algorithm you want, rather than being constrained to always use the algorithm that was most recent when you first integrated Vash.</p>
+
+<h4>What is the difference between the algorithms?:</h4>
+	<p>"1-fast" is slightly faster than "1" on large data sets, but is significantly less secure:  it uses md5 internally instead of sha-512.  Only use "1-fast" if you have specific performance problems with "1".</p>
+	
+<hr/>
+<p>Copyright 2011 Zettabyte Storage LLC</p>
+</body>
