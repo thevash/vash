@@ -23,7 +23,7 @@ import os.path
 import subprocess
 
 parser = OptionParser()
-parser.add_option('--exec', dest='target', default='./vashc')
+parser.add_option('--exec', dest='target', default='java -jar Vash.jar')
 parser.add_option('--count', dest='count', default='100')
 parser.add_option('--mode', dest='mode', default='auto')
 parser.add_option('--verbose', dest='verbose', action="store_true")
@@ -44,10 +44,9 @@ for i in keys:
 	seed = "%04d" % i
 	print("AT: {}".format(seed))
 	genargs = PROGRAM + [
-				'--width', '96', '--height', '96',
-				'--min-depth', '2', '--max-depth', '5',
-				'--mode', options.mode,
-				'--output', './gallery/%s.bmp' % seed, '--seed', seed]
+				'--width', '256', '--height', '128',
+				'--data', seed, '--algorithm', '1-fast',
+				'--output', './gallery/%s.png' % seed]
 	proc = subprocess.Popen(genargs, stdin=None, stdout=PIPE, stderr=STDOUT)
 	data = proc.communicate()
 	if proc.returncode != 0 or options.verbose:
