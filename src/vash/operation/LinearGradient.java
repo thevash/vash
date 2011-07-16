@@ -42,16 +42,17 @@ public class LinearGradient extends OperationNode {
 		this(new Position(s), new Position(s));
 	}
 
+	@Override
+	public LinearGradient clone() {
+		return new LinearGradient(p0.clone(), p1.clone());
+	}
+	
 	private float _dist(float x0, float y0, float x1, float y1) {
 		float xp = x1 - x0;
 		float yp = y1 - y0;
 		return (float)Math.sqrt(xp * xp + yp * yp);
 	}
 
-	@Override
-	public LinearGradient clone() {
-		return new LinearGradient(p0.clone(), p1.clone());
-	}
 	
 	@Override
 	public Plane compute(ImageParameters ip) {
