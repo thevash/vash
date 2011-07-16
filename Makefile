@@ -3,7 +3,13 @@ VERSION=1.0.0
 doc:
 	javadoc -public -sourcepath src -subpackages vash -overview src/overview.html -breakiterator -d doc -use -version -windowtitle "Vash Documentation" -linksource
 
-jar:
+bin:
+	mkdir -p bin
+
+javac: bin
+	cd src && find vash -name '*.java' | xargs javac -d ../bin
+
+jar: javac
 	jar cfm Vash.jar src/manifest.mf -C bin vash/ -C bin ec/
 
 dist: jar doc
