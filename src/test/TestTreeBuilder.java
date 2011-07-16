@@ -49,6 +49,7 @@ public class TestTreeBuilder {
 		}
 		
 		for(int i = 0; i < GALLERY_SIZE; i++) {
+			System.out.format("At image: %03d\n", i);
 			tp = new TreeParameters(String.format("%03d", i), algo);
 			tree = new Tree(tp);
 
