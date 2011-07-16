@@ -68,10 +68,6 @@ public class TestOperationIntegration {
 		
 	}
 
-	private void runTest(String test, OperationNode a) {
-		this.runTest(test, a, a.clone(), a.clone());
-	}
-
 	public static double compare(byte[] actual, int w, int h, String goal_in, String diff_out) {
 		// read the expected result
 		BufferedImage img = null;
@@ -138,7 +134,11 @@ public class TestOperationIntegration {
 
 		return error;
 	}
-	
+
+	private void runTest(String test, OperationNode a) {
+		this.runTest(test, a, a.clone(), a.clone());
+	}
+
 	private void runTest(String test, OperationNode r, OperationNode g, OperationNode b) {
 		ColorNode tree = new RGB_Space(r, g, b);
 		byte[] actual = tree.compute(this.ip, true);
