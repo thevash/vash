@@ -38,7 +38,7 @@ public class TestTreeBuilder {
 	private final int WIDTH = 128;
 	private final int HEIGHT = 128;
 
-	public void runStaticTest(String algo) {
+	public void runStaticTest(String algo, int width, int height) {
 		TreeParameters tp;
 		Tree tree;
 
@@ -59,25 +59,30 @@ public class TestTreeBuilder {
 				fail(e.toString());
 			}
 
-			ImageParameters ip = new ImageParameters(WIDTH, HEIGHT);
+			ImageParameters ip = new ImageParameters(width, height);
 			tree.setGenerationParameters(ip);
 			byte[] actual = tree.generateCurrentFrame();
-			TestOperationIntegration.compare(actual, WIDTH, HEIGHT, String.format("./test/reference-%s/%03d.png", algo, i), null);
+			TestOperationIntegration.compare(actual, width, height, String.format("./test/reference-%s/%03d.png", algo, i), null);
 			
-			OutputParameters op = new OutputParameters(String.format("./gallery-%s/%03d.png", algo, i), WIDTH, HEIGHT);
+			OutputParameters op = new OutputParameters(String.format("./gallery-%s/%03d.png", algo, i), width, height);
 			Output out = new Output(op, tree);
 			out.generate();
 		}
 	}
 
 	@Test
+	public void testBuildTree1FastNonSquare() {
+		runStaticTest("1-fast-nonsquare", WIDTH * 2, HEIGHT);
+	}
+
+	@Test
 	public void testBuildTree1Fast() {
-		runStaticTest("1-fast");
+		runStaticTest("1-fast", WIDTH, HEIGHT);
 	}
 
 	@Test
 	public void testBuildTree1() {
-		runStaticTest("1");
+		runStaticTest("1", WIDTH, HEIGHT);
 	}
 
 }
