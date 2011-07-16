@@ -176,17 +176,31 @@ public class TestOperationIntegration {
 	// linear gradient / plane orientation tests
 	@Test public void testLinGradDiagLeftFill()  { this.runTest("2101", new LinearGradient(0, 0, 1, 1)); }
 	@Test public void testLinGradDiagRightFill() { this.runTest("2102", new LinearGradient(-1, -1, 0, 0)); }
+	// Note: the rest of these codify existing, non-optimal behavior
 	@Test public void testLinGradDiagNorthSouth(){ this.runTest("2103", new LinearGradient(0, -1, 0, 1)); }
 	@Test public void testLinGradDiagSouthNorth(){ this.runTest("2104", new LinearGradient(0, 1, 0, -1)); }
 	@Test public void testLinGradDiagNonSquareNorthSouth() {
 		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
 		this.runTest("2105", new LinearGradient(0, -1, 0, 1));
 	}
 	@Test public void testLinGradDiagNonSquareSouthNorth() {
 		this.ip = new ImageParameters(256, 128);
-		this.runTest("2106", new LinearGradient(0, 1, 0, -1));
-	}
-
+		this.opt.setWidth(256);
+		this.runTest("2106", new LinearGradient(0, 1, 0, -1)); }
+	@Test public void testLinGradDiagNorthSouthTiltedBig()  { 
+		this.runTest("2107", new LinearGradient(0, -1, 1, 1)); }
+	@Test public void testLinGradDiagNorthSouthTiltedSmall()  { 
+		this.runTest("2108", new LinearGradient(0, -1, 0.09, 1)); }
+	@Test public void testLinGradDiagNonSquareNorthSouthTiltedBig()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2109", new LinearGradient(0, -1, 1, 1)); }
+	@Test public void testLinGradDiagNonSquareNorthSouthTiltedSmall()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2110", new LinearGradient(0, -1, 0.09, 1)); }
+	
 	// polar theta
 	@Test public void testPolarTheta0() 	{ this.runTest("2201", new PolarTheta(0, 0, 0)); }
 	@Test public void testPolarTheta05N() 	{ this.runTest("2202", new PolarTheta(0, 0, -0.5)); }

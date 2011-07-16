@@ -53,34 +53,13 @@ public class LinearGradient extends OperationNode {
 		return (float)Math.sqrt(xp * xp + yp * yp);
 	}
 
-	
-	@Override
-	public Plane compute(ImageParameters ip) {
+	private void _computeInternal(
+			Plane out, float w, float h, 
+			float[] X, float[] Y, 
+			float x0, float y0, float x1, float y1) {
 		float denom, b, m, d0to1, intX, intY, d0toInt, d1toInt, d;
-		float w = ip.getW();
-		float h = ip.getH();
-		float[] X = ip.getXValues();
-		float[] Y = ip.getYValues();
-		float x0 = (float)p0.getX();
-		float y0 = (float)p0.getY();
-		float x1 = (float)p1.getX();
-		float y1 = (float)p1.getY();
-		boolean needFlip = false;
-		Plane out = ip.getPlane();
 
 		denom = x1 - x0;
-		if(denom < 0.1f) {
-			needFlip = true;
-			float tmp;
-			tmp = y0;
-			y0 = x0;
-			x0 = tmp;
-			tmp = y1;
-			y1 = x1;
-			x1 = tmp;
-			denom = x1 - x0;
-		}
-
         m = (y1 - y0) / denom;
         b = m * x0 - y0;
         d0to1 = _dist(x0, y0, x1, y1);
@@ -105,17 +84,53 @@ public class LinearGradient extends OperationNode {
 				}
 			}
 		}
-	    
-	    if(needFlip) {
-	    	Plane out2 = ip.getPlane();
-		    for(int j = 0; j < h; j++ ) {
-				for(int i = 0; i < w; i++) {
-					out2.data[i][j] = out.data[j][i];
+	}
+
+	
+	@Override
+	public Plane compute(ImageParameters ip) {
+		float w = ip.getW();
+		float h = ip.getH();
+		float[] X = ip.getXValues();
+		float[] Y = ip.getYValues();
+		float x0 = (float)p0.getX();
+		float y0 = (float)p0.getY();
+		float x1 = (float)p1.getX();
+		float y1 = (float)p1.getY();
+		Plane out = ip.getPlane();
+		float denom;
+
+		denom = x1 - x0;
+		if(denom < 0.1f) {
+			/*
+			 * Since we use the slope to compute the gradent, we have a nasty
+			 * singularity when the slope is infinite.  If the slope is near
+			 * infinite, we compute the gradient on the plane mirrored about
+			 * y=x and then flip the result back when we are done.
+			 */
+			if(w == h) {
+				_computeInternal(out, w, h, X, Y, y0, x0, y1, x1);
+				Plane tmp = ip.getPlane();
+				for(int j = 0; j < h; j++) {
+					for(int i = 0; i < w; i++) {
+						tmp.data[i][j] = out.data[j][i];
+					}
 				}
-		    }
-		    ip.putPlane(out);
-		    return out2;
-	    }
+				ip.putPlane(out);
+				out = tmp;
+			} else {
+				Plane yxOut = ip.getYXPlane();
+				_computeInternal(yxOut, h, w, Y, X, y0, x0, y1, x1);
+				for(int j = 0; j < h; j++) {
+					for(int i = 0; i < w; i++) {
+						out.data[i][j] = yxOut.data[(int)h - j - 1][(int)w - i - 1];
+					}
+				}
+				ip.putYXPlane(yxOut);
+			}
+		} else {
+			_computeInternal(out, w, h, X, Y, x0, y0, x1, y1);
+		}
 		
 		return out;
 	}

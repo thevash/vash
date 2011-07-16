@@ -101,6 +101,22 @@ public class ImageParameters {
 	public void putPlane(Plane p) {
 		cache.addFirst(p);
 	}
+	
+	/**
+	 * Returns a new plane of values who's coordinates are mirrored around 
+	 * y=x.  This is useful in some nodes that use slope, in order to avoid 
+	 * singularities around vertical lines.
+	 * @return a one-off plane; must be returned with putYXPlane
+	 */
+	public Plane getYXPlane() {
+		return new Plane(this.h, this.w);
+	}
 
+	/**
+	 * Give back a plane taken with getYXPlane.
+	 * @param p the plane allocated with getYXPlane
+	 */
+	public void putYXPlane(Plane p) {
+	}
 }
 

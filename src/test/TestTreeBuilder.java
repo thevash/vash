@@ -82,8 +82,12 @@ public class TestTreeBuilder {
 	}
 
 	@Test
+	public void testBuildTree1NonSquare() {
+		runStaticTest("1", "1-nonsquare", WIDTH * 2, HEIGHT);
+	}
+
+	@Test
 	public void testBuildTree1() {
 		runStaticTest("1", "1", WIDTH, HEIGHT);
 	}
-
 }
