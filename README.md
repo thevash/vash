@@ -28,7 +28,7 @@ Vash is a stand-alone Java Virtual Machine (JVM) jar file.  It can be run with t
 Getting the Source
 ------------------
 
-Follow the directions on our github page at https://github.com/thevash/vash to clone the repository.
+Visit us on GitHub at https://github.com/thevash/vash for full source downloads or to clone the repository.
 
 
 Building
