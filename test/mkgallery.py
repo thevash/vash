@@ -41,7 +41,7 @@ else:
 	keys = range(1, COUNT + 1)
 
 for i in keys:
-	seed = "%04d" % i
+	seed = "%03d" % i
 	print("AT: {}".format(seed))
 	genargs = PROGRAM + [
 				'--width', '256', '--height', '128',
