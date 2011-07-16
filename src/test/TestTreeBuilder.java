@@ -38,12 +38,12 @@ public class TestTreeBuilder {
 	private final int WIDTH = 128;
 	private final int HEIGHT = 128;
 
-	public void runStaticTest(String algo, int width, int height) {
+	public void runStaticTest(String algo, String name, int width, int height) {
 		TreeParameters tp;
 		Tree tree;
 
 		// ensure we have an output directory
-		File treeTgt = new File(String.format("./gallery-%s/trees/", algo));
+		File treeTgt = new File(String.format("./gallery-%s/trees/", name));
 		if(!treeTgt.exists()) {
 			Assert.assertTrue(treeTgt.mkdirs());
 		}
@@ -55,7 +55,7 @@ public class TestTreeBuilder {
 
 			// write out the tree we built
 			try {
-				tree.show(String.format("./gallery-%s/trees/%03d.txt", algo, i));
+				tree.show(String.format("./gallery-%s/trees/%03d.txt", name, i));
 			} catch(IOException e) {
 				fail(e.toString());
 			}
@@ -63,9 +63,9 @@ public class TestTreeBuilder {
 			ImageParameters ip = new ImageParameters(width, height);
 			tree.setGenerationParameters(ip);
 			byte[] actual = tree.generateCurrentFrame();
-			TestOperationIntegration.compare(actual, width, height, String.format("./test/reference-%s/%03d.png", algo, i), null);
+			TestOperationIntegration.compare(actual, width, height, String.format("./test/reference-%s/%03d.png", name, i), null);
 			
-			OutputParameters op = new OutputParameters(String.format("./gallery-%s/%03d.png", algo, i), width, height);
+			OutputParameters op = new OutputParameters(String.format("./gallery-%s/%03d.png", name, i), width, height);
 			Output out = new Output(op, tree);
 			out.generate();
 		}
@@ -73,17 +73,17 @@ public class TestTreeBuilder {
 
 	@Test
 	public void testBuildTree1FastNonSquare() {
-		runStaticTest("1-fast-nonsquare", WIDTH * 2, HEIGHT);
+		runStaticTest("1-fast", "1-fast-nonsquare", WIDTH * 2, HEIGHT);
 	}
 
 	@Test
 	public void testBuildTree1Fast() {
-		runStaticTest("1-fast", WIDTH, HEIGHT);
+		runStaticTest("1-fast", "1-fast", WIDTH, HEIGHT);
 	}
 
 	@Test
 	public void testBuildTree1() {
-		runStaticTest("1", WIDTH, HEIGHT);
+		runStaticTest("1", "1", WIDTH, HEIGHT);
 	}
 
 }
