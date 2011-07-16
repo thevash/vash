@@ -180,11 +180,11 @@ public class TestOperationIntegration {
 	@Test public void testLinGradDiagSouthNorth(){ this.runTest("2104", new LinearGradient(0, 1, 0, -1)); }
 	@Test public void testLinGradDiagNonSquareNorthSouth() {
 		this.ip = new ImageParameters(256, 128);
-		this.runTest("2104", new LinearGradient(0, -1, 0, 1));
+		this.runTest("2105", new LinearGradient(0, -1, 0, 1));
 	}
 	@Test public void testLinGradDiagNonSquareSouthNorth() {
 		this.ip = new ImageParameters(256, 128);
-		this.runTest("2104", new LinearGradient(0, 1, 0, -1));
+		this.runTest("2106", new LinearGradient(0, 1, 0, -1));
 	}
 
 	// polar theta
