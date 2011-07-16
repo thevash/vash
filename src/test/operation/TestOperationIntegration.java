@@ -29,6 +29,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import vash.ImageParameters;
+import vash.Options;
 import vash.Output;
 import vash.operation.Absolute;
 import vash.operation.Add;
@@ -52,15 +54,15 @@ import vash.operation.Squircle;
 
 
 public class TestOperationIntegration {
-	private vash.Options opt;
-	private vash.ImageParameters ip;
+	private Options opt;
+	private ImageParameters ip;
 	
 	@Before
 	public void setUp() throws Exception {
-		this.opt = new vash.Options();
+		this.opt = new Options();
 		this.opt.setWidth(128);
 		this.opt.setHeight(128);
-		this.ip = new vash.ImageParameters(this.opt.getWidth(), this.opt.getHeight());
+		this.ip = new ImageParameters(this.opt.getWidth(), this.opt.getHeight());
 	}
 	
 	@After
