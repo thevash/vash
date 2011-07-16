@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 public class Vash {
 	public static final int MAJOR_VERSION = 1;
 	public static final int MINOR_VERSION = 0;
-	public static final int REVISION = 0;
+	public static final int REVISION = 1;
 	public static final String VERSION = String.format("%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, REVISION);
 	
 	/**

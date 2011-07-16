@@ -1,4 +1,4 @@
-VERSION=1.0.0
+VERSION=1.0.1
 
 doc:
 	javadoc -public -sourcepath src -subpackages vash -overview src/overview.html -breakiterator -d doc -use -version -windowtitle "Vash Documentation" -linksource
