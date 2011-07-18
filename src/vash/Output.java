@@ -119,13 +119,21 @@ public class Output {
 	/**
 	 * Write the given image to the output file specified in our output parameters.
 	 */
-	public static void writeImageFile(String filename, String filetype, BufferedImage bimage) { 
-		File fp = new File(filename);
-		try {
-			fp = new File(fp.getCanonicalPath());
-			ImageIO.write(bimage, filetype, fp);
-		} catch(IOException e) {
-			System.out.println("Failed to write image: " + e.toString());
+	public static void writeImageFile(String filename, String filetype, BufferedImage bimage) {
+		if(filename.equals("-")) {
+			try {
+				ImageIO.write(bimage, filetype, System.out);
+			} catch(IOException e) {
+				System.out.println("Failed to write image to stdout");
+			}
+		} else {
+			File fp = new File(filename);
+			try {
+				fp = new File(fp.getCanonicalPath());
+				ImageIO.write(bimage, filetype, fp);
+			} catch(IOException e) {
+				System.out.println("Failed to write image: " + e.toString());
+			}
 		}
 	}
 	

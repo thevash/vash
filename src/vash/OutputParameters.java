@@ -71,6 +71,7 @@ public class OutputParameters {
 		if(tmp.endsWith(".png")) this.imageType = "png";
 		else if(tmp.endsWith(".jpg")) this.imageType = "jpeg";
 		else if(tmp.endsWith(".bmp")) this.imageType = "bmp";
+		else if(tmp.equals("-")) this.imageType = "png";
 		else {
 			//is_video = true;
 			//this.imageType = null;
