@@ -9,7 +9,7 @@ About
 
 Vash is a family of visual hashing algorithms that take data and convert it into images.  As with a hash function, the same input will always produce the same output and similar inputs will reliably produce significantly different outputs.  Generally you can use Vash anywhere you would normally want to show a hash function.  Unlike a hash function however, you can show the output to the user.  This opens up many exciting new possibilities, some of which we discuss in the "Example Applications" section.
 
-More information, sample output, and complete documentation may be found at: http://www.thevash.com
+More information, sample output, and complete documentation may be found at: [http://www.thevash.com](http://www.thevash.com).
 
 
 License and Support
@@ -28,7 +28,7 @@ Vash is a stand-alone Java Virtual Machine (JVM) jar file.  It can be run with t
 Getting the Source
 ------------------
 
-Visit us on GitHub at https://github.com/thevash/vash for full source downloads or to clone the repository.
+Visit us on GitHub at [https://github.com/thevash/vash](https://github.com/thevash/vash) for full source downloads or to clone the repository.
 
 
 Building
