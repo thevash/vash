@@ -35,7 +35,7 @@ public class Example1 {
 		// Use the high level interface
 		BufferedImage img1 = Vash.createImage(algorithm, data, width, height);
 		
-		// The same interface is available as bytes.
+		// The same interface is available for bytes data.
 		BufferedImage img2 = Vash.createImage(algorithm, data.getBytes(), width, height);
 
 		// these two images will be identical
