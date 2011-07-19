@@ -21,7 +21,6 @@ package vash;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -157,8 +156,6 @@ public class Tree {
 	 */
 	public void show(String filename) throws IOException {
 		BufferedWriter fp = new BufferedWriter(new FileWriter(filename));
-		String hexdigest = new BigInteger(1, this.params.getSeed().getSeedBase()).toString(16);
-		fp.write(String.format("Seed: %s%n", hexdigest));
 		this.tree.show(fp, 0);
 		fp.close();
 	}
