@@ -1,6 +1,7 @@
 package example;
 
 import java.awt.image.BufferedImage;
+import java.security.NoSuchAlgorithmException;
 import java.util.Vector;
 
 import vash.ImageParameters;
@@ -36,11 +37,21 @@ public class Example2 {
 		String algorithm = "1";
 		
 		// The seed string is the value that we are hashing.
-		String data = "Foo";
+		byte[] data = "Foo".getBytes();
 
 		// The tree parameters encapsulate everything the Tree class needs to know
 		//	to build a unique tree, based on the passed string of data.
-		TreeParameters tp = new TreeParameters(data, algorithm);
+		TreeParameters tp = null;
+		try {
+			tp = TreeParameters.createInstance(algorithm, data);
+		} catch(NoSuchAlgorithmException e) {
+			// Vash makes heavy use of the system's crytographic primitives, including
+			//	SHA-512 and SHA-256, which were under export regulations some years ago.
+			//	Everything we need should be present on any modern machine, so this should
+			//	never get thrown in practice.
+			System.err.println("Missing cryptographic primitives: " + e.toString());
+			System.exit(1);
+		}
 		Tree tree = new Tree(tp);
 
 		for(int size = 16; size <= 2048; size *= 2) {

@@ -1,6 +1,7 @@
 package test;
 
 import java.awt.image.BufferedImage;
+import java.security.NoSuchAlgorithmException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,8 +16,11 @@ public class TestRegressions {
 		String data = "foo";
 		int width = 64;
 		int height = 32;
+
+		BufferedImage img1 = null;
+		try { img1 = Vash.createImage(algorithm, data, width, height);
+		} catch(NoSuchAlgorithmException e) { Assert.assertFalse(true); }
 		
-		BufferedImage img1 = Vash.createImage(algorithm, data, width, height);
 		Assert.assertTrue("this should not crash", img1 != null);
 	}
 }

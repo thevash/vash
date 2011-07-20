@@ -20,8 +20,10 @@ package test;
 
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -50,7 +52,8 @@ public class TestTreeBuilder {
 		
 		for(int i = 0; i < GALLERY_SIZE; i++) {
 			System.out.format("At image: %03d\n", i);
-			tp = new TreeParameters(String.format("%03d", i), algo);
+			InputStream data = new ByteArrayInputStream(String.format("%03d", i).getBytes());
+			tp = TreeParameters.createInstanceOrDie(algo, null, data);
 			tree = new Tree(tp);
 
 			// write out the tree we built
@@ -67,7 +70,12 @@ public class TestTreeBuilder {
 			
 			OutputParameters op = new OutputParameters(String.format("./gallery-%s/%03d.png", name, i), width, height);
 			Output out = new Output(op, tree);
-			out.generate();
+			try {
+				out.generate();
+			} catch(IOException e) {
+				System.err.println(e.toString());
+				Assert.assertTrue(false);
+			}
 		}
 	}
 

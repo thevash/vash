@@ -60,7 +60,7 @@ public class Output {
 	/**
 	 * Generate image(s) from the Tree and write them with the instance's OutputParameters.
 	 */
-	public void generate() {
+	public void generate() throws IOException {
 		// do computation of a frame
 		//if(!this.params.isVideo()) {
 		BufferedImage bimg = this.generateImage();
@@ -119,21 +119,15 @@ public class Output {
 	/**
 	 * Write the given image to the output file specified in our output parameters.
 	 */
-	public static void writeImageFile(String filename, String filetype, BufferedImage bimage) {
+	public static void writeImageFile(String filename, String filetype, BufferedImage bimage) 
+			throws IOException 
+	{
 		if(filename.equals("-")) {
-			try {
-				ImageIO.write(bimage, filetype, System.out);
-			} catch(IOException e) {
-				System.out.println("Failed to write image to stdout");
-			}
+			ImageIO.write(bimage, filetype, System.out);
 		} else {
 			File fp = new File(filename);
-			try {
-				fp = new File(fp.getCanonicalPath());
-				ImageIO.write(bimage, filetype, fp);
-			} catch(IOException e) {
-				System.out.println("Failed to write image: " + e.toString());
-			}
+			fp = new File(fp.getCanonicalPath());
+			ImageIO.write(bimage, filetype, fp);
 		}
 	}
 	

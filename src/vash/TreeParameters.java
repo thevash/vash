@@ -18,6 +18,10 @@
  */
 package vash;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 import vash.operation.Operation;
@@ -39,29 +43,133 @@ public class TreeParameters {
 	private final double duration;
 	private final double minPeriod;
 	private final double fps;
+
+	
+	/**
+	 * This method instantiates a new TreeParameters for data Bytes.  The advantage of this method
+	 * over one of the constructors is that it ignores the needlessly general IOException, as 
+	 * there is no File IO in this version.  This version of the function takes the default salt.
+	 * @param algo
+	 * @param dataBytes
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	public static TreeParameters createInstance(String algo, byte[] dataBytes) 
+			throws NoSuchAlgorithmException
+	{
+		try {
+			return new TreeParameters(algo, null, new ByteArrayInputStream(dataBytes));
+		} catch(IOException e) { // not going to happen on a ByteArrayInputStream :-/
+			return null;
+		}
+	}
+
+	
+	/**
+	 * This method instantiates a new TreeParameters for data Bytes.  The advantage of this method
+	 * over one of the constructors is that it ignores the needlessly general IOException, as 
+	 * there is no File IO in this version.  This version of the function takes a salt.
+	 * @param algo
+	 * @param salt
+	 * @param dataBytes
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	public static TreeParameters createInstance(String algo, byte[] salt, byte[] dataBytes) 
+			throws NoSuchAlgorithmException
+	{
+		try {
+			return new TreeParameters(algo, salt, new ByteArrayInputStream(dataBytes));
+		} catch(IOException e) { // not going to happen on a ByteArrayInputStream :-/
+			return null;
+		}
+	}
+
+	
+	/**
+	 * A helper method for applications that wraps potential errors during TreeParameter creation
+	 * and simply makes them fatal.
+	 * @param algo
+	 * @param salt
+	 * @param data
+	 * @return
+	 */
+	public static TreeParameters createInstanceOrDie(String algo, byte[] salt, InputStream data)
+	{
+		try {
+			return new TreeParameters(algo, salt, data);
+		} catch(IOException e) {
+			System.err.format("Failed to create TreeParameters: %s%n", e.toString());
+			e.printStackTrace(System.err);
+			System.exit(1);
+		} catch(NoSuchAlgorithmException e) {
+			System.err.format("Failed to create TreeParameters: %s%n", e.toString());
+			e.printStackTrace(System.err);
+			System.exit(1);
+		}
+		return null;
+	}
+
+	
+	/**
+	 * A helper method for applications that wraps potential errors during TreeParameter creation
+	 * and simply makes them fatal.
+	 * @param opt
+	 * @return
+	 */
+	public static TreeParameters createInstanceOrDie(Options opt)
+	{
+		try {
+			return new TreeParameters(opt);
+		} catch(IOException e) {
+			System.err.format("Failed to create TreeParameters: %s%n", e.toString());
+			e.printStackTrace(System.err);
+			System.exit(1);
+		} catch(NoSuchAlgorithmException e) {
+			System.err.format("Failed to create TreeParameters: %s%n", e.toString());
+			e.printStackTrace(System.err);
+			System.exit(1);
+		}
+		return null;
+	}
+
 	
 	/**
 	 * Initialize new tree generation parameters from command line options.
 	 * @param opts
 	 */
-	public TreeParameters(Options opts) {
-		this(opts.getSeed(), opts.getAlgorithm());
+	public TreeParameters(Options opts) 
+			throws IOException, NoSuchAlgorithmException
+	{
+		this(opts.getAlgorithm(), null, opts.getData());
 	}
+
+	
+	/**
+	 * Initialize new tree generation parameters from input data and algorithm.
+	 * @param dataStr the input data as a string
+	 * @param algo the algorithm identification string
+	 */
+	public TreeParameters(String dataStr, String algo) 
+			throws IOException, NoSuchAlgorithmException
+	{
+		this(algo, null, new ByteArrayInputStream(dataStr.getBytes()));
+	}
+
 
 	/**
-	 * Initialize new tree generation parameters from a seed and algorithm.
-	 * @param seedStr
+	 * Initialize new tree generation parameters from a salt, input data, and algorithm.
+	 * @param saltBytes
+	 * @param seedStream
 	 * @param algo
 	 */
-	public TreeParameters(String seedStr, String algo) {
-		this(seedStr.getBytes(), algo);
-	}
-		
-	public TreeParameters(byte[] seedBytes, String algo) {
-		seed = Seed.fromBytesOrDie(seedBytes, algo);
-		opRatios = new HashMap<Operation, Double>();
+	public TreeParameters(String algo, byte[] saltBytes, InputStream dataStream) 
+			throws IOException, NoSuchAlgorithmException
+	{
+		seed = new Seed(algo, saltBytes, dataStream);
 
-		if(algo.equals("1") || algo.equals("1-fast")) {
+		opRatios = new HashMap<Operation, Double>();
+		if(algo.equals("1") || algo.equals("1-fast") || algo.equals("1.1")) {
 			minDepth = 2;
 			maxDepth = 8;
 			// color
@@ -86,7 +194,7 @@ public class TreeParameters {
 			opRatios.put(Operation.GRADIENT_LINEAR,	1.0);
 			opRatios.put(Operation.POLAR_THETA,		2.0);
 		} else {
-			throw new IllegalArgumentException("Unrecognized algorithm string: \"" + algo + "\"");
+			throw new InvalidAlgorithmException("Unrecognized algorithm string: \"" + algo + "\"");
 		}
 
 		this.animationMode = null;

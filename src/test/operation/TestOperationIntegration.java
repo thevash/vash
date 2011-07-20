@@ -116,7 +116,12 @@ public class TestOperationIntegration {
 		// write out the diff before asserting, so we have it even if we fail
 		if(diff_out != null) {
 			BufferedImage bdiff = Output.dataToImage(diff, w, h);
-			Output.writeImageFile(diff_out, "png", bdiff);
+			try {
+				Output.writeImageFile(diff_out, "png", bdiff);
+			} catch(IOException e) {
+				System.err.println(e.toString());
+				Assert.assertTrue(false);
+			}
 		}
 
 		for(int y = 0; y < h; y++) {
@@ -149,7 +154,12 @@ public class TestOperationIntegration {
 		
 		// write the image to show what we got so we can compare on failures
 		BufferedImage bactual = Output.dataToImage(actual, w, h);
-		Output.writeImageFile("./test/result/" + test + ".png", "png", bactual);
+		try {
+			Output.writeImageFile("./test/result/" + test + ".png", "png", bactual);
+		} catch(IOException e) {
+			System.err.println(e.toString());
+			Assert.assertTrue(false);
+		}
 
 		compare(actual, w, h, "./test/goal/" + test + ".png", "test/diff/" + test + ".png");
 		

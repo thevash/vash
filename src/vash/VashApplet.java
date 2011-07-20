@@ -26,6 +26,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JApplet;
@@ -130,13 +131,12 @@ public class VashApplet extends JApplet implements ActionListener {
 		SwingWorker<BufferedImage, Object> worker = new SwingWorker<BufferedImage, Object>() {
 			@Override
 			public BufferedImage doInBackground() {
-				TreeParameters tp = new TreeParameters(_inp, ALGORITHM);
-				Tree tree = new Tree(tp);
-				ImageParameters ip = new ImageParameters(SIZE, SIZE);
-				tree.setGenerationParameters(ip);
-				byte[] pix = tree.generateCurrentFrame();
-				BufferedImage bimage = Output.dataToImage(pix, SIZE, SIZE);
-				return bimage;
+				try {
+					return Vash.createImage(ALGORITHM, _inp, SIZE, SIZE);
+				} catch(NoSuchAlgorithmException e) {
+					hashImagePanel.setLabel(e.getLocalizedMessage());
+					return null;
+				}
 			}
 			@Override
 			public void done() {
