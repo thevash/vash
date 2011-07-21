@@ -147,6 +147,7 @@ class SeedProviderHVAC {
 		Toffset += 1;
 		
 		// fill our bitset with the bits in current
+		Tbitpos = 0;
 		for(i = 0; i < PRF_SIZE; i++) {
 			byte b = Tcurrent[i];
 			for(j = 7; j >= 0; j--) {
