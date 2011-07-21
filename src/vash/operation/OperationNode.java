@@ -96,6 +96,16 @@ abstract public class OperationNode {
 		assert(_children[offset] == null);
 		_children[offset] = child;
 	}
+	
+	/**
+	 * Return the node at offset position.
+	 * @param offset must be less than n_children.
+	 * @return
+	 */
+	public OperationNode getChild(int offset) {
+		assert(offset < _children.length);
+		return _children[offset];
+	}
 
 	/**
 	 * Return a reference to this nodes array of values.
