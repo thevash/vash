@@ -192,6 +192,8 @@ public class Seed {
 	// algorithm 2
 	private SeedProviderHVAC hvac;
 
+	// count out how many bits we used
+	private int usedEntropy = 0;
 
 	/**
 	 * Return the number of bytes of data that should be passed for salt, if a salt is used.
@@ -295,13 +297,29 @@ public class Seed {
 
 
 	public double nextDouble() {
+		double d = 0.0;
 		if(this.hvac != null)
-			return this.hvac.nextDouble();
-		if(this.twister != null)
-			return this.twister.nextDouble();
-		return this.linear_congruent.nextDouble();
+			d = this.hvac.nextDouble();
+		else if(this.twister != null)
+			d = this.twister.nextDouble();
+		else
+			d = this.linear_congruent.nextDouble();
+		usedEntropy += 53;
+		return d;
 	}
 	
+	/**
+	 * Return the number of bits our generator has returned.
+	 * @return
+	 */
+	public int getBitsOfEntropyUsed() {
+		return usedEntropy;
+	}
+	
+	/**
+	 * Return the algorithm used to initialize this seed.
+	 * @return
+	 */
 	public String getAlgorithm() {
 		return this.algorithm;
 	}
