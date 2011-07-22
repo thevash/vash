@@ -101,10 +101,15 @@ public class Tree {
 		LEAFS_total = _totalFreq(LEAFS);
 		NODES_AND_LEAFS_total = NODES_total + LEAFS_total;
 
-		this.tree = (ColorNode)this._buildNode(0);
+		this.tree = this._buildToplevel();
 		this.tree.accumulateValues(this.values);
 	}
 
+	
+	private ColorNode _buildToplevel() {
+		return (ColorNode)_buildNode(0);
+	}
+	
 
 	private OperationNode _buildNode(int level) {
 		OperationNode op = _selectAndCreateOp(level);
