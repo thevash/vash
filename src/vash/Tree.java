@@ -120,7 +120,8 @@ public class Tree {
 		return op;
 	}
 	
-	private OperationNode _selectAndCreateOp(int level) {
+	
+	private Operation _selectOp(int level) {
 		// select list of ops to select from
 		Operation[] ops;
 		double total;
@@ -148,12 +149,18 @@ public class Tree {
 		for(Operation item : ops) {
 			pos += this.params.getOperationRatio(item);
 			if(pos > rand) {
-				return OperationFactory.createNode(item, this.params.getSeed());
+				return item;
 			}
 		}
 		
 		throw new RuntimeException("Overflowed our OperationytecodeTable somehow at level: " + Integer.toString(level));
 	}
+	
+	
+	private OperationNode _selectAndCreateOp(int level) {
+		return OperationFactory.createNode(_selectOp(level), this.params.getSeed());
+	}
+	
 	
 	/**
 	 * Write a string representation of this tree to a given filename. 
