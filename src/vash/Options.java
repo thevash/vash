@@ -283,6 +283,10 @@ public class Options {
 		HashSet<String> haveArg = new HashSet<String>(_haveArg.length);
 		for(String i : _haveArg) haveArg.add(i);
 		
+		// track whether we have seen data/file input, so we can warn if we get both
+		int haveData = 0;
+		int haveFile = 0;
+		
 		// record when we find it, so we can set it at the end, 
 		//	after we have the algorithm identifier
 		byte[] saltBytes = null;
@@ -311,8 +315,10 @@ public class Options {
 				setAlgorithm(opt);
 			} else if(arg.equals("--data") || arg.equals("-d")) {
 				setData(opt.getBytes());
+				haveData += 1;
 			} else if(arg.equals("--file") || arg.equals("-f")) {
 				setData(opt);
+				haveFile += 1;
 			} else if(arg.equals("--salt") || arg.equals("-s")) {
 				saltBytes = opt.getBytes();
 			} else if(arg.equals("--salt-file") || arg.equals("-S")) {
@@ -336,6 +342,17 @@ public class Options {
 			} else {
 				throw new IllegalArgumentException(String.format("The option \"%s\" is not recognized.", arg));
 			}
+		}
+		
+		// if we specified data or file twice, or specified both data and file at the same time
+		if(haveData > 1) {
+			throw new IllegalArgumentException("-d/--data must only be set once.");
+		}
+		if(haveFile > 1) {
+			throw new IllegalArgumentException("-f/--file must only be set once.");
+		}
+		if(haveData > 0 && haveFile > 0) {
+			throw new IllegalArgumentException("-d/--data and -f/--file must not both be set.");
 		}
 		
 		// ensure we got both a data and an algorithm parameter at some point
