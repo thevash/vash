@@ -39,21 +39,23 @@ public class Vash {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// parse arguments
+		// parse arguments and load parameters
 		Options opts = null;
+		TreeParameters tp = null;
+		OutputParameters op = null;
 		try {
 			opts = new Options(args);
+			tp = TreeParameters.createInstanceOrDie(opts);
+			op = new OutputParameters(opts);
 		} catch(IllegalArgumentException e) {
 			System.err.println("Error: " + e.getLocalizedMessage());
 			System.exit(1);
 		}
 		
 		// load a tree
-		TreeParameters tp = TreeParameters.createInstanceOrDie(opts);
 		Tree tree = new Tree(tp);
 
 		// generate and write out the tree
-		OutputParameters op = new OutputParameters(opts);
 		Output out = new Output(op, tree);
 		try {
 			out.generate();
