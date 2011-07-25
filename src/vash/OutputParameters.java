@@ -25,6 +25,8 @@ package vash;
  * extension currently must be one of "jpg", "png", or "bmp".
  */
 public class OutputParameters {
+	private static final int MINIMUM_SIZE = 4;
+	
 	/**
 	 * The output filename, regardless of other output modes.
 	 */
@@ -82,6 +84,9 @@ public class OutputParameters {
 		}
 		if(!format.equals("png") && !format.equals("jpeg") && !format.equals("bmp")) {
 			throw new IllegalArgumentException("Unknown output format: '" + format + "'");
+		}
+		if(width < MINIMUM_SIZE || height < MINIMUM_SIZE) {
+			throw new IllegalArgumentException("Width and Height must both be at least 4.");
 		}
 		this.filename = filename;
 		this.imageType = format;
