@@ -71,6 +71,7 @@ public class Tree {
 			};
 	private static final Operation[] LEAFS = {
 			Operation.CONST,
+			Operation.ELLIPSE,
 			Operation.FLOWER,
 			Operation.GRADIENT_LINEAR,
 			Operation.GRADIENT_RADIAL,

@@ -43,6 +43,7 @@ public final class OperationFactory {
 		case SQUIRCLE: 			return new Squircle(s);
 		// LEAF
 		case CONST: 			return new Const(s);
+		case ELLIPSE:			return new Ellipse(s);
 		case FLOWER: 			return new Flower(s);
 		case GRADIENT_LINEAR: 	return new LinearGradient(s);
 		case GRADIENT_RADIAL: 	return new RadialGradient(s);

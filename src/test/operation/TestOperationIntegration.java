@@ -37,6 +37,7 @@ import vash.operation.Add;
 import vash.operation.ColorNode;
 import vash.operation.Const;
 import vash.operation.Divide;
+import vash.operation.Ellipse;
 import vash.operation.Exponentiate;
 import vash.operation.Flower;
 import vash.operation.Invert;
@@ -246,6 +247,25 @@ public class TestOperationIntegration {
 	// xcoord
 	@Test public void testXCoord()	{this.runTest("2500", XCoord());}
 	@Test public void testYCoord()	{this.runTest("2600", YCoord());}
+	
+	// ellipse
+	Ellipse getEllipse(double deg, double size) {
+		double rad = Math.PI * deg / 180.0;
+		double x0 = Math.sin(rad) / 2.0;
+		double y0 = Math.cos(rad) / 2.0;
+		return new Ellipse(x0, y0, -x0, -y0, size);
+	}
+	@Test public void testEllipse0() {this.runTest("2700", getEllipse(0, 0.5));}
+	@Test public void testEllipse1() {this.runTest("2701", getEllipse(36, 0.5));}
+	@Test public void testEllipse2() {this.runTest("2702", getEllipse(72, 0.5));}
+	@Test public void testEllipse3() {this.runTest("2703", getEllipse(108, 0.5));}
+	@Test public void testEllipse4() {this.runTest("2704", getEllipse(144, 0.5));}
+	@Test public void testEllipse5() {this.runTest("2705", getEllipse(180, 0.5));}
+	@Test public void testEllipse6() {this.runTest("2706", getEllipse(216, 0.5));}
+	@Test public void testEllipse7() {this.runTest("2707", getEllipse(252, 0.5));}
+	@Test public void testEllipse8() {this.runTest("2708", getEllipse(288, 0.5));}
+	@Test public void testEllipse9() {this.runTest("2709", getEllipse(324, 0.5));}
+	@Test public void testEllipse10() {this.runTest("2710", getEllipse(360, 1.0));}
 	
 	// Unary Op
 	@Test public void testAbs()		{this.runTest("3000", new Absolute(XCoord()));}

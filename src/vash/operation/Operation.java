@@ -40,6 +40,7 @@ public enum Operation {
 	SQUIRCLE,
 	// LEAF
 	CONST,
+	ELLIPSE,
 	FLOWER,
 	GRADIENT_LINEAR,
 	GRADIENT_RADIAL,

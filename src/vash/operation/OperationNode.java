@@ -164,7 +164,21 @@ abstract public class OperationNode {
 	protected static float clampf(float in, float lower, float upper) {
 		return Math.min(Math.max(in, lower), upper);
 	}
-	
+
+	/**
+	 * A utility function used by many nodes when computing values.
+	 * @param x0
+	 * @param y0
+	 * @param x1
+	 * @param y1
+	 * @return
+	 */
+	protected static float distance(float x0, float y0, float x1, float y1) {
+		float xp = x1 - x0;
+		float yp = y1 - y0;
+		return (float)Math.sqrt(xp * xp + yp * yp);
+	}
+
 	/**
 	 * Create and return a completely independent copy of this node.
 	 */
