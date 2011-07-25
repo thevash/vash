@@ -189,6 +189,7 @@ public class TreeParameters {
 			opRatios.put(Operation.SPIRAL,			new OpParams(0.1));
 			opRatios.put(Operation.SQUIRCLE,		new OpParams(2.0));
 			// leaf
+			opRatios.put(Operation.CONST,			new OpParams(0.0));
 			opRatios.put(Operation.FLOWER,			new OpParams(3.5));
 			opRatios.put(Operation.GRADIENT_RADIAL,	new OpParams(1.0));
 			opRatios.put(Operation.ELLIPSE,			new OpParams(0.0));
