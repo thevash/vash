@@ -97,7 +97,7 @@ public class LinearGradient extends OperationNode {
 		denom = x1 - x0;
 		if(denom < 0.1f) {
 			/*
-			 * Since we use the slope to compute the gradent, we have a nasty
+			 * Since we use the slope to compute the gradient, we have a nasty
 			 * singularity when the slope is infinite.  If the slope is near
 			 * infinite, we compute the gradient on the plane mirrored about
 			 * y=x and then flip the result back when we are done.
