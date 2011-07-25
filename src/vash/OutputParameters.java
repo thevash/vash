@@ -51,40 +51,60 @@ public class OutputParameters {
 
 	/**
 	 * Initialize a parameters from values passed on the command line.
+	 * @param opts
 	 */
 	public OutputParameters(Options opts) {
-		this(opts.getOutput(), opts.getWidth(), opts.getHeight());
+		this(opts.getOutput(), opts.getOutputFormat(), opts.getWidth(), opts.getHeight());
 	}
 	
-	
+
 	/**
-	 * Initialize parameters from given values.
+	 * Initialize parameters from given values.  Guess output format from filename.
 	 * @param filename The name of the target file to write to.
 	 * @param width The width of the image to write.
 	 * @param height The height of the image to write.
 	 */
 	public OutputParameters(String filename, int width, int height) {
-		this.filename = filename;
-		
-		String tmp = filename.toLowerCase();
-		//boolean is_video = false;
-		if(tmp.endsWith(".png")) this.imageType = "png";
-		else if(tmp.endsWith(".jpg")) this.imageType = "jpeg";
-		else if(tmp.endsWith(".bmp")) this.imageType = "bmp";
-		else if(tmp.equals("-")) this.imageType = "png";
-		else {
-			//is_video = true;
-			//this.imageType = null;
-			throw new IllegalArgumentException("Unknown media type for given extension: \"" + 
-					tmp.subSequence(filename.length() - 4, filename.length()) + "\"");
+		this(filename, guessFormat(filename), width, height);
+	}
+
+	
+	/**
+	 * Initialize parameters from given values.
+	 * @param filename The name of the target file to write to.
+	 * @param format The image output format (bmp, png, or jpeg).
+	 * @param width The width of the image to write.
+	 * @param height The height of the image to write.
+	 */
+	public OutputParameters(String filename, String format, int width, int height) {
+		if(format == null) {
+			format = guessFormat(filename);
 		}
-		//this.isVideo = is_video;
-		
+		if(!format.equals("png") && !format.equals("jpeg") && !format.equals("bmp")) {
+			throw new IllegalArgumentException("Unknown output format: '" + format + "'");
+		}
+		this.filename = filename;
+		this.imageType = format;
 		this.width = width;
 		this.height = height;
 	}
-	
 
+	/**
+	 * Guess the filetype from the extension.
+	 * @param filename
+	 * @return
+	 */
+	public static String guessFormat(String filename) {
+		String tmp = filename.toLowerCase();
+		if(tmp.endsWith(".png")) return "png";
+		else if(tmp.endsWith(".jpg")) return "jpeg";
+		else if(tmp.endsWith(".bmp")) return "bmp";
+		else if(tmp.equals("-")) return "png";
+		throw new IllegalArgumentException("Unknown media type for given extension: \"" + 
+					tmp.subSequence(filename.length() - 4, filename.length()) + "\"");
+	}
+
+	
 	public String getFilename() {
 		return filename;
 	}

@@ -57,7 +57,10 @@ public class Options {
 			"Output Options:\n" +
 			"  -w,--width  [Integer] The output image width\n" +
 			"  -h,--height [Integer] The output image height\n" +
-			"  -o,--output [String]  The filename to write to (use - to write to stdout)\n";
+			"  -o,--output [String]  The filename to write to (use - to write to stdout)\n" +
+			"                        (default: \"output.png\")\n" +
+			"  -F,--format [String]  One of 'bmp', 'jpeg', or 'png'.  If not set this will\n" + 
+			"                        be guessed from the extension of the output option.\n";
 	
 	public static final String[] KNOWN_ALGORITHMS = {
 		"1", "1-fast", "1.1"
@@ -73,6 +76,7 @@ public class Options {
 
 	// output arguments
 	private String output = "output.png";
+	private String outputFormat = null;
 	private int width = 128;
 	private int height = 128;
 
@@ -183,7 +187,14 @@ public class Options {
 	public void setOutput(String output) {
 		this.output = output;
 	}
-	
+
+	public String getOutputFormat() {
+		return outputFormat;
+	}
+	public void setOutputFormat(String fmt) {
+		this.outputFormat = fmt;
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -261,6 +272,7 @@ public class Options {
 				"--salt", "-s",
 				"--salt-file", "-S",
 				"--output", "-o",
+				"--format", "-F",
 				"--width", "-w", 
 				"--height", "-h",
 				"--animate-mode", "-A",
@@ -307,6 +319,8 @@ public class Options {
 				saltFilename = opt;
 			} else if(arg.equals("--output") || arg.equals("-o")) {
 				setOutput(opt);
+			} else if(arg.equals("--format") || arg.equals("-F")) {
+				setOutputFormat(opt);
 			} else if(arg.equals("--width") || arg.equals("-w")) {
 				setWidth(Integer.decode(opt));
 			} else if(arg.equals("--height") || arg.equals("-h")) {
