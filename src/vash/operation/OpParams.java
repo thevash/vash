@@ -23,11 +23,19 @@ package vash.operation;
  * algorithm specifier.
  */
 public class OpParams {
-	public double ratio;
-	public double loudness;
+	public final double ratio;
+	public final double channels;
+	public final double loudness;
 	
-	public OpParams(double ratio, double loudness) {
+	public OpParams(double ratio) {
 		this.ratio = ratio;
-		this.loudness = loudness;
+		this.channels = 3.0;
+		this.loudness = 0.0;
+	}
+
+	public OpParams(double ratio, double channels) {
+		this.ratio = ratio;
+		this.channels = channels;
+		this.loudness = 0.0;
 	}
 }
