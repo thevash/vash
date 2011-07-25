@@ -94,10 +94,11 @@ public class RadialGradient extends OperationNode {
 				x1 = (x0 * ca) - (y0 * sa);
 				y1 = (x0 * sa) + (y0 * ca);
 				
-				// distend
+				// squeeze by proportion
 				x2 = x1 / w;
 				y2 = y1 / h;
 				
+				// intensity in proportion to distance
 				tmp = -(float)Math.sqrt(x2 * x2 + y2 * y2) * twoOverSqrtTwo + 1.0f;
 				out.data[i][j] = OperationNode.clampf(tmp, -1.0f, 1.0f);
 			}
