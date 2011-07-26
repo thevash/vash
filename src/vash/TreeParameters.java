@@ -37,7 +37,7 @@ public class TreeParameters {
 	// tree layout algorithm parameters
 	private final short minDepth;
 	private final short maxDepth;
-	private final HashMap<Operation, OpParams> opRatios;
+	private final HashMap<Operation, OpParams> ops;
 	
 	// tree value animation parameters
 	private final AnimationMode animationMode;
@@ -169,57 +169,57 @@ public class TreeParameters {
 	{
 		seed = new Seed(algo, saltBytes, dataStream);
 
-		opRatios = new HashMap<Operation, OpParams>();
+		ops = new HashMap<Operation, OpParams>();
 		if(algo.equals("1") || algo.equals("1-fast")) {
 			minDepth = 2;
 			maxDepth = 8;
 			// color
-			opRatios.put(Operation.RGB, 			new OpParams(1.0));
+			ops.put(Operation.RGB, 				new OpParams(1.0));
 			// arith
-			opRatios.put(Operation.ABSOLUTE, 		new OpParams(0.5));
-			opRatios.put(Operation.ADD, 			new OpParams(0.5));
-			opRatios.put(Operation.DIVIDE, 			new OpParams(0.5));
-			opRatios.put(Operation.EXPONENTIATE,	new OpParams(0.5));
-			opRatios.put(Operation.INVERT,			new OpParams(0.5));
-			opRatios.put(Operation.MODULUS,			new OpParams(0.5));
-			opRatios.put(Operation.MULTIPLY,		new OpParams(0.5));
+			ops.put(Operation.ABSOLUTE, 		new OpParams(0.5));
+			ops.put(Operation.ADD, 				new OpParams(0.5));
+			ops.put(Operation.DIVIDE, 			new OpParams(0.5));
+			ops.put(Operation.EXPONENTIATE,		new OpParams(0.5));
+			ops.put(Operation.INVERT,			new OpParams(0.5));
+			ops.put(Operation.MODULUS,			new OpParams(0.5));
+			ops.put(Operation.MULTIPLY,			new OpParams(0.5));
 			// trig
-			opRatios.put(Operation.SINC,			new OpParams(0.0));
-			opRatios.put(Operation.SINE,			new OpParams(0.0));
-			opRatios.put(Operation.SPIRAL,			new OpParams(0.1));
-			opRatios.put(Operation.SQUIRCLE,		new OpParams(2.0));
+			ops.put(Operation.SINC,				new OpParams(0.0));
+			ops.put(Operation.SINE,				new OpParams(0.0));
+			ops.put(Operation.SPIRAL,			new OpParams(0.1));
+			ops.put(Operation.SQUIRCLE,			new OpParams(2.0));
 			// leaf
-			opRatios.put(Operation.CONST,			new OpParams(0.0));
-			opRatios.put(Operation.FLOWER,			new OpParams(3.5));
-			opRatios.put(Operation.GRADIENT_RADIAL,	new OpParams(1.0));
-			opRatios.put(Operation.ELLIPSE,			new OpParams(0.0));
-			opRatios.put(Operation.GRADIENT_LINEAR,	new OpParams(1.0));
-			opRatios.put(Operation.POLAR_THETA,		new OpParams(2.0));
+			ops.put(Operation.CONST,			new OpParams(0.0));
+			ops.put(Operation.FLOWER,			new OpParams(3.5));
+			ops.put(Operation.GRADIENT_RADIAL,	new OpParams(1.0));
+			ops.put(Operation.ELLIPSE,			new OpParams(0.0));
+			ops.put(Operation.GRADIENT_LINEAR,	new OpParams(1.0));
+			ops.put(Operation.POLAR_THETA,		new OpParams(2.0));
 		} else if(algo.equals("1.1")) {
 			minDepth = 2;
 			maxDepth = 8;
 			// color
-			opRatios.put(Operation.RGB, 			new OpParams(1.0, 3.0));
+			ops.put(Operation.RGB, 				new OpParams(1.0, 3.0));
 			// arith
-			opRatios.put(Operation.ABSOLUTE, 		new OpParams(0.3, 2.0));
-			opRatios.put(Operation.ADD, 			new OpParams(0.3, 3.0));
-			opRatios.put(Operation.DIVIDE, 			new OpParams(0.3, 3.0));
-			opRatios.put(Operation.EXPONENTIATE,	new OpParams(0.5, 3.0));
-			opRatios.put(Operation.INVERT,			new OpParams(0.1, 3.0));
-			opRatios.put(Operation.MODULUS,			new OpParams(0.5, 3.0));
-			opRatios.put(Operation.MULTIPLY,		new OpParams(0.3, 3.0));
+			ops.put(Operation.ABSOLUTE, 		new OpParams(0.3, 2.0));
+			ops.put(Operation.ADD, 				new OpParams(0.3, 3.0));
+			ops.put(Operation.DIVIDE, 			new OpParams(0.3, 3.0));
+			ops.put(Operation.EXPONENTIATE,		new OpParams(0.5, 3.0));
+			ops.put(Operation.INVERT,			new OpParams(0.1, 3.0));
+			ops.put(Operation.MODULUS,			new OpParams(0.5, 3.0));
+			ops.put(Operation.MULTIPLY,			new OpParams(0.3, 3.0));
 			// trig
-			opRatios.put(Operation.SINC,			new OpParams(0.0, 3.0));
-			opRatios.put(Operation.SINE,			new OpParams(0.0, 3.0));
-			opRatios.put(Operation.SPIRAL,			new OpParams(0.1, 3.0));
-			opRatios.put(Operation.SQUIRCLE,		new OpParams(1.5, 2.0));
+			ops.put(Operation.SINC,				new OpParams(0.0, 3.0));
+			ops.put(Operation.SINE,				new OpParams(0.0, 3.0));
+			ops.put(Operation.SPIRAL,			new OpParams(0.1, 3.0));
+			ops.put(Operation.SQUIRCLE,			new OpParams(1.5, 2.0));
 			// leaf
-			opRatios.put(Operation.CONST,			new OpParams(0.0, 0.0));
-			opRatios.put(Operation.FLOWER,			new OpParams(3.5, 3.0));
-			opRatios.put(Operation.GRADIENT_RADIAL,	new OpParams(1.0, 3.0));
-			opRatios.put(Operation.ELLIPSE,			new OpParams(2.0, 3.0));
-			opRatios.put(Operation.GRADIENT_LINEAR,	new OpParams(1.0, 3.0));
-			opRatios.put(Operation.POLAR_THETA,		new OpParams(2.0, 3.0));
+			ops.put(Operation.CONST,			new OpParams(0.0, 0.0));
+			ops.put(Operation.FLOWER,			new OpParams(3.5, 3.0));
+			ops.put(Operation.GRADIENT_RADIAL,	new OpParams(1.0, 3.0));
+			ops.put(Operation.ELLIPSE,			new OpParams(2.0, 3.0));
+			ops.put(Operation.GRADIENT_LINEAR,	new OpParams(1.0, 3.0));
+			ops.put(Operation.POLAR_THETA,		new OpParams(2.0, 3.0));
 		} else {
 			throw new InvalidAlgorithmException("Unrecognized algorithm string: \"" + algo + "\"");
 		}
@@ -243,12 +243,12 @@ public class TreeParameters {
 	}
 
 	public double getOperationRatio(Operation op) {
-		OpParams p = this.opRatios.get(op);
+		OpParams p = this.ops.get(op);
 		return p.ratio;
 	}
 
 	public double getOperationLoudness(Operation op) {
-		OpParams p = this.opRatios.get(op);
+		OpParams p = this.ops.get(op);
 		return p.loudness;
 	}
 	
