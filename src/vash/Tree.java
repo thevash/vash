@@ -41,13 +41,6 @@ public class Tree {
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
-	private double _totalFreq(Operation[] data) {
-		double sum = 0.0;
-		for(Operation item : data) {
-			sum += this.params.getOperationRatio(item);
-		}
-		return sum;
-	}
 	
 	// operation sets for our guided random walks
 	private static final Operation[] TOPS = {
@@ -79,12 +72,6 @@ public class Tree {
 			};
 	private static final Operation [] NODES_AND_LEAFS = concat(NODES, LEAFS);
 
-	// pre-compute our total frequencies when we learn our generation parameters
-	private final double TOPS_total;
-	private final double NODES_total;
-	private final double LEAFS_total;
-	private final double NODES_AND_LEAFS_total;
-
 	// tree parameters
 	private final TreeParameters params;
 	private final ColorNode tree;
@@ -97,10 +84,6 @@ public class Tree {
 	 */
 	public Tree(TreeParameters params) {
 		this.params = params;
-		TOPS_total = _totalFreq(TOPS);
-		NODES_total = _totalFreq(NODES);
-		LEAFS_total = _totalFreq(LEAFS);
-		NODES_AND_LEAFS_total = NODES_total + LEAFS_total;
 
 		this.tree = this._buildToplevel();
 		this.tree.accumulateValues(this.values);
@@ -185,21 +168,22 @@ public class Tree {
 	private Operation _selectOp(int level) {
 		// select list of ops to select from
 		Operation[] ops;
-		double total;
 		double rand, pos;
 
 		if(level == 0) {
 			ops = TOPS;
-			total = TOPS_total;
 		} else if(level <= this.params.getMinDepth()) {
 			ops = NODES;
-			total = NODES_total;
 		} else if(level >= this.params.getMaxDepth()) {
 			ops = LEAFS;
-			total = LEAFS_total;
 		} else {
 			ops = NODES_AND_LEAFS;
-			total = NODES_AND_LEAFS_total;
+		}
+
+		// compute the total for our ops
+		double total = 0.0;
+		for(Operation op : ops) {
+			total += this.params.getOperationRatio(op);
 		}
 		
 		// get a random number in [0, total]
