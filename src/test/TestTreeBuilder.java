@@ -164,6 +164,6 @@ public class TestTreeBuilder {
 		assertSameMask(new boolean[] {false, false, true}, Tree.__buildChannelMask(seed, 1));
 
 		assertSameMask(new boolean[] {false, false, false}, Tree.__buildChannelMask(seed, 0));
-}
+	}
 
 }
