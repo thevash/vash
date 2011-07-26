@@ -38,7 +38,7 @@ import ec.util.MersenneTwisterFast;
  */
 class SeedProviderHVAC {
 	private static final String XTR_ALGORITHM = "HmacSHA512";
-	private static final int XTR_SIZE = 512 / 8;
+	@SuppressWarnings("unused") private static final int XTR_SIZE = 512 / 8;
 
 	private static final String PRF_ALGORITHM = "HmacSHA256";
 	private static final int PRF_SIZE = 256 / 8;
