@@ -107,6 +107,66 @@ public class Tree {
 	}
 
 	
+	/**
+	 * Not for public use.
+	 * @param s
+	 * @param count
+	 * @return
+	 */
+	public static boolean[] __buildChannelMask(Seed s, int count) {
+		switch(count) {
+		case 3: return new boolean[] {true, true, true};
+		case 2:
+			switch(s.nextInt(3)) {
+			case 0: return new boolean[] {false, true, true};
+			case 1: return new boolean[] {true, false, true};
+			case 2: return new boolean[] {true, true, false};
+			}
+		case 1:
+			switch(s.nextInt(3)) {
+			case 0: return new boolean[] {true, false, false};
+			case 1: return new boolean[] {false, true, false};
+			case 2: return new boolean[] {false, false, true};
+			}
+		case 0: return new boolean[] {false, false, false};
+		default: throw new IllegalArgumentException("BuildChannelMask needs count in [0..3]");
+		}
+	}
+
+	/**
+	 * Not for public use.
+	 * @param s
+	 * @param channels
+	 * @return
+	 */
+	public static int __getChannelExclusionCount(Seed s, double channels) {
+		// NOTE: we have not touched these doubles at all, so it is safe to compare directly here
+		if(channels <= 0.0) { // 0 channels
+			return 3;
+		} else if(channels > 0.0 && channels < 1.0) { // maybe 1 channel
+			if(s.nextDouble() > channels) // larger number in channels = higher probability 2 (not 3)
+				return 3;
+			else
+				return 2;
+		} else if(channels == 1.0) { // 1 channel
+			return 2;
+		} else if(channels > 1.0 && channels < 2.0) { // 1 and maybe 2 channels
+			if(s.nextDouble() > (channels - 1.0)) // larger number in channels = higher probability 1 (not 2)
+				return 2;
+			else
+				return 1;
+		} else if(channels == 2.0) { // 2 channel
+			return 1;
+		} else if(channels > 2.0 && channels < 3.0) { // 2 and maybe 3 channels
+			if(s.nextDouble() > (channels - 2.0)) // larger number in channels = higher probability 0 (not 1)
+				return 1;
+			else
+				return 0;
+		}
+		// 3 channels: no exclusions
+		return 0;
+	}
+	
 	private ColorNode _buildToplevel() {
 		return (ColorNode)_buildNode(0);
 	}
