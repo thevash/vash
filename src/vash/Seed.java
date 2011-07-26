@@ -164,6 +164,21 @@ class SeedProviderHVAC {
         return ((l0 << 27) + l1) / (double)(1L << 53);
 	}
 	
+	int nextInt(int n) {
+		if (n <= 0)
+			throw new IllegalArgumentException("n must be positive");
+
+		if ((n & -n) == n)  // i.e., n is a power of 2
+			return (int)((n * nextBits(31)) >> 31);
+		
+		int bits, val;
+		do {
+			bits = (int)nextBits(31);
+			val = bits % n;
+		} while (bits - val + (n-1) < 0);
+		return val;
+    }
+	
 	private long nextBits(int n) {
 		assert(n <= 64);
 		long out = 0;
@@ -306,6 +321,19 @@ public class Seed {
 			d = this.linear_congruent.nextDouble();
 		usedEntropy += 53;
 		return d;
+	}
+	
+	
+	public int nextInt(int n) {
+		int i;
+		if(this.hvac != null)
+			i = this.hvac.nextInt(n);
+		else if(this.twister != null)
+			i = this.twister.nextInt(n);
+		else
+			i = this.linear_congruent.nextInt(n);
+		usedEntropy += 31;
+		return i;
 	}
 	
 	/**
