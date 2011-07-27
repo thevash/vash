@@ -42,6 +42,7 @@ import vash.operation.Exponentiate;
 import vash.operation.Flower;
 import vash.operation.Invert;
 import vash.operation.LinearGradient;
+import vash.operation.LinearGradient1;
 import vash.operation.Modulus;
 import vash.operation.Multiply;
 import vash.operation.OperationNode;
@@ -184,7 +185,7 @@ public class TestOperationIntegration {
 	@Test public void testConstBlue() 	{ this.runTest("1103", c1N(), c1N(), c1P()); }
 	@Test public void testConstMagenta(){ this.runTest("1104", c1P(), c1N(), c1P()); }
 	
-	// linear gradient / plane orientation tests
+	// linear gradient
 	@Test public void testLinGradDiagLeftFill()  { this.runTest("2101", new LinearGradient(0, 0, 1, 1)); }
 	@Test public void testLinGradDiagRightFill() { this.runTest("2102", new LinearGradient(-1, -1, 0, 0)); }
 	// Note: the rest of these codify existing, non-optimal behavior
@@ -211,6 +212,52 @@ public class TestOperationIntegration {
 		this.ip = new ImageParameters(256, 128);
 		this.opt.setWidth(256);
 		this.runTest("2110", new LinearGradient(0, -1, 0.09, 1)); }
+
+	// new linear gradient
+	@Test public void testLinGrad1DiagLeftFill()  { this.runTest("2111", new LinearGradient1(0, 0, 1, 1)); }
+	@Test public void testLinGrad1DiagRightFill() { this.runTest("2112", new LinearGradient1(-1, -1, 0, 0)); }
+	@Test public void testLinGrad1DiagNorthSouth(){ this.runTest("2113", new LinearGradient1(0, -1, 0, 1)); }
+	@Test public void testLinGrad1DiagSouthNorth(){ this.runTest("2114", new LinearGradient1(0, 1, 0, -1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouth() {
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2115", new LinearGradient1(0, -1, 0, 1));
+	}
+	@Test public void testLinGrad1DiagNonSquareSouthNorth() {
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2116", new LinearGradient1(0, 1, 0, -1)); }
+	@Test public void testLinGrad1DiagNorthSouthTiltedBig()  { 
+		this.runTest("2117", new LinearGradient1(0, -1, 1, 1)); }
+	@Test public void testLinGrad1DiagNorthSouthTiltedSmall()  { 
+		this.runTest("2118", new LinearGradient1(0, -1, 0.09, 1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouthTiltedBig()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2119", new LinearGradient1(0, -1, 1, 1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouthTiltedSmall()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2120", new LinearGradient1(0, -1, 0.09, 1)); }
+
+	// linear gradient do a full planar rotation
+	LinearGradient1 getLinGrad(double deg) {
+		double rad = Math.PI * deg / 180.0;
+		double x0 = Math.sin(rad) / 2.0;
+		double y0 = Math.cos(rad) / 2.0;
+		return new LinearGradient1(x0, y0, -x0, -y0);
+	}
+	@Test public void testLinGrad0() {this.runTest("2130", getLinGrad(0));}
+	@Test public void testLinGrad1() {this.runTest("2131", getLinGrad(36));}
+	@Test public void testLinGrad2() {this.runTest("2132", getLinGrad(72));}
+	@Test public void testLinGrad3() {this.runTest("2133", getLinGrad(108));}
+	@Test public void testLinGrad4() {this.runTest("2134", getLinGrad(144));}
+	@Test public void testLinGrad5() {this.runTest("2135", getLinGrad(180));}
+	@Test public void testLinGrad6() {this.runTest("2136", getLinGrad(216));}
+	@Test public void testLinGrad7() {this.runTest("2137", getLinGrad(252));}
+	@Test public void testLinGrad8() {this.runTest("2138", getLinGrad(288));}
+	@Test public void testLinGrad9() {this.runTest("2139", getLinGrad(324));}
+
 	
 	// polar theta
 	@Test public void testPolarTheta0() 	{ this.runTest("2201", new PolarTheta(0, 0, 0)); }
@@ -243,7 +290,6 @@ public class TestOperationIntegration {
 	private OperationNode YCoord() {
 		return new LinearGradient(0, 1, 0, -1);
 	}
-	
 	// xcoord
 	@Test public void testXCoord()	{this.runTest("2500", XCoord());}
 	@Test public void testYCoord()	{this.runTest("2600", YCoord());}
