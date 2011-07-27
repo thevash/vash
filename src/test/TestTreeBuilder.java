@@ -102,6 +102,11 @@ public class TestTreeBuilder {
 	public void testBuildTree1() {
 		runStaticTest("1", "1", WIDTH, HEIGHT);
 	}
+
+	@Test
+	public void testBuildTree1_1() {
+		runStaticTest("1.1", "1.1", WIDTH, HEIGHT);
+	}
 	/////// END GOLDEN OUTPUT TESTS
 
 	protected FakeSeed seed;
