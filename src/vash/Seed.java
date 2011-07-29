@@ -206,6 +206,8 @@ public class Seed {
 	private MersenneTwisterFast twister;
 	// algorithm 2
 	private SeedProviderHVAC hvac;
+	// for 1 and 1-fast
+	public static final int SALT_SIZE = 512 / 8;
 
 	// count out how many bits we used
 	private int usedEntropy = 0;
@@ -217,7 +219,7 @@ public class Seed {
 	 */
 	public static int getSaltSizeForAlgorithm(String algo) {
 		if(algo.equals("1-fast") || algo.equals("1")) {
-			return 0;
+			return SALT_SIZE;
 		} else if(algo.equals("1.1")) {
 			return SeedProviderHVAC.SALT_SIZE;
 		}
@@ -238,11 +240,9 @@ public class Seed {
 	{
 		this.algorithm = algorithm;
 		if(algorithm.equals("1-fast")) {
-			if(saltBytes != null) { throw new InvalidSaltException("Algorithm 1-fast does not take a salt"); }
-			init1Fast(dataStream);
+			init1Fast(saltBytes, dataStream);
 		} else if(algorithm.equals("1")) {
-			if(saltBytes != null) { throw new InvalidSaltException("Algorithm 1 does not take a salt"); }
-			init1(dataStream);
+			init1(saltBytes, dataStream);
 		} else if(algorithm.equals("1.1")) {
 			initHVAC(saltBytes, dataStream);
 		} else {
@@ -251,10 +251,13 @@ public class Seed {
 	}
 	
 
-	private void init1Fast(InputStream seedStream) 
+	private void init1Fast(byte[] saltBytes, InputStream seedStream) 
 			throws	NoSuchAlgorithmException, IOException 
 	{
 		MessageDigest md = MessageDigest.getInstance("MD5");
+		if(saltBytes != null) {
+			md.update(saltBytes);
+		}
 
 		int cnt = 0;
 		byte[] buffer = new byte[4096];
@@ -277,9 +280,12 @@ public class Seed {
 	}
 	
 	
-	private void init1(InputStream seedStream) throws 
+	private void init1(byte[] saltBytes, InputStream seedStream) throws 
 				NoSuchAlgorithmException, IOException {
 		MessageDigest md = MessageDigest.getInstance("SHA-512");
+		if(saltBytes != null) {
+			md.update(saltBytes, 0, SALT_SIZE);
+		}
 		
 		int cnt = 0;
 		byte[] buffer = new byte[4096];
