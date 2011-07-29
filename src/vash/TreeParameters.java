@@ -142,7 +142,7 @@ public class TreeParameters {
 	public TreeParameters(Options opts) 
 			throws IOException, NoSuchAlgorithmException
 	{
-		this(opts.getAlgorithm(), null, opts.getData());
+		this(opts.getAlgorithm(), opts.getSalt(), opts.getData());
 	}
 
 	
