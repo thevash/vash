@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import vash.operation.ColorNode;
 import vash.operation.Operation;
@@ -31,10 +32,32 @@ import vash.operation.OperationNode;
 import vash.value.Value;
 
 
+
 /**
  * A tree of operations which represent the computation of an image.
  */
 public class Tree {
+	/*
+	 * ChannelParameters overlays TreeParameters, masking or augmenting values as needed on a
+	 * per channel basis.
+	 */
+	class ChannelParameters {
+		// operations which are excluded from inclusion in this channel
+		HashSet<Operation> exclude;
+
+		ChannelParameters() {
+			exclude = new HashSet<Operation>();
+		}
+		
+		void addExclude(Operation op) {
+			exclude.add(op);
+		}
+
+		boolean isExcluded(Operation op) {
+			return exclude.contains(op);
+		}
+	}
+	
 	// we use these at class construction to precompute values
 	private static <T> T[] concat(T[] first, T[] second) {
 		T[] result = Arrays.copyOf(first, first.length + second.length);
@@ -115,6 +138,7 @@ public class Tree {
 		default: throw new IllegalArgumentException("BuildChannelMask needs count in [0..3]");
 		}
 	}
+	
 
 	/**
 	 * Not for public use.
@@ -150,22 +174,61 @@ public class Tree {
 		return 0;
 	}
 	
-	private ColorNode _buildToplevel() {
-		return (ColorNode)_buildNode(0);
+	// drive channel exclusion selection for each operation on each channel
+	private void _setupChannelExclusions(ChannelParameters[] chans) {
+		Seed s = params.getSeed();
+		for(Operation op : NODES_AND_LEAFS) {
+			double n_channels = params.getOperationChannels(op);
+			int n_exclude = __getChannelExclusionCount(s, n_channels);
+			boolean[] exclude = __buildChannelMask(s, n_exclude);
+			for(int i = 0; i < 3; i++) {
+				if(exclude[i]) {
+					chans[i].addExclude(op);
+				}
+			}
+		}
 	}
 	
+	private ColorNode _buildToplevel() {
+		// only allow one plane to have the singleton class
+		if(this.params.getSeed().getAlgorithm().equals("1.1")) {
+			// toplevel (color) node
+			ColorNode rgb = (ColorNode)_selectAndCreateOp(0, new ChannelParameters());
+			
+			// channel parameters
+			ChannelParameters[] chan = {
+					new ChannelParameters(),
+					new ChannelParameters(),
+					new ChannelParameters()
+			};
+			_setupChannelExclusions(chan);
+			
+			// build each channel and attach to color node
+			OperationNode r = _buildNode(1, chan[0]);
+			OperationNode g = _buildNode(1, chan[1]);
+			OperationNode b = _buildNode(1, chan[2]);
+			rgb.setChild(0, r);
+			rgb.setChild(1, g);
+			rgb.setChild(2, b);
 
-	private OperationNode _buildNode(int level) {
-		OperationNode op = _selectAndCreateOp(level);
+			return rgb;
+		} else {
+			return (ColorNode)_buildNode(0, new ChannelParameters());
+		}
+	}
+
+	
+	private OperationNode _buildNode(int level, ChannelParameters chan) {
+		OperationNode op = _selectAndCreateOp(level, chan);
 		for(int i = 0; i < op.getChildCount(); i++) {
-			OperationNode child = _buildNode(level + 1);
+			OperationNode child = _buildNode(level + 1, chan);
 			op.setChild(i, child);
 		}
 		return op;
 	}
 	
 	
-	private Operation _selectOp(int level) {
+	private Operation _selectOp(int level, ChannelParameters chan) {
 		// select list of ops to select from
 		Operation[] ops;
 		double rand, pos;
@@ -183,6 +246,7 @@ public class Tree {
 		// compute the total for our ops
 		double total = 0.0;
 		for(Operation op : ops) {
+			if(chan.isExcluded(op)) { continue; }
 			total += this.params.getOperationRatio(op);
 		}
 		
@@ -191,10 +255,11 @@ public class Tree {
 		
 		// walk the table until we find our op
 		pos = 0.0;
-		for(Operation item : ops) {
-			pos += this.params.getOperationRatio(item);
+		for(Operation op : ops) {
+			if(chan.isExcluded(op)) { continue; }
+			pos += this.params.getOperationRatio(op);
 			if(pos > rand) {
-				return item;
+				return op;
 			}
 		}
 		
@@ -202,8 +267,8 @@ public class Tree {
 	}
 	
 	
-	private OperationNode _selectAndCreateOp(int level) {
-		return OperationFactory.createNode(_selectOp(level), this.params.getSeed());
+	private OperationNode _selectAndCreateOp(int level, ChannelParameters chan) {
+		return OperationFactory.createNode(_selectOp(level, chan), this.params.getSeed());
 	}
 	
 	

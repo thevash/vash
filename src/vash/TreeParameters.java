@@ -201,7 +201,7 @@ public class TreeParameters {
 			// color
 			ops.put(Operation.RGB, 				new OpParams(1.0, 3.0));
 			// arith
-			ops.put(Operation.ABSOLUTE, 		new OpParams(0.3, 2.0));
+			ops.put(Operation.ABSOLUTE, 		new OpParams(0.2, 0.9));
 			ops.put(Operation.ADD, 				new OpParams(0.3, 3.0));
 			ops.put(Operation.DIVIDE, 			new OpParams(0.3, 3.0));
 			ops.put(Operation.EXPONENTIATE,		new OpParams(0.5, 3.0));
@@ -209,10 +209,10 @@ public class TreeParameters {
 			ops.put(Operation.MODULUS,			new OpParams(0.5, 3.0));
 			ops.put(Operation.MULTIPLY,			new OpParams(0.3, 3.0));
 			// trig
-			ops.put(Operation.SINC,				new OpParams(0.0, 3.0));
-			ops.put(Operation.SINE,				new OpParams(0.0, 3.0));
-			ops.put(Operation.SPIRAL,			new OpParams(0.1, 3.0));
-			ops.put(Operation.SQUIRCLE,			new OpParams(1.5, 2.0));
+			ops.put(Operation.SINC,				new OpParams(0.0, 0.0));
+			ops.put(Operation.SINE,				new OpParams(0.0, 0.0));
+			ops.put(Operation.SPIRAL,			new OpParams(0.2, 2.0));
+			ops.put(Operation.SQUIRCLE,			new OpParams(2.0, 1.8));
 			// leaf
 			ops.put(Operation.CONST,			new OpParams(0.0, 0.0));
 			ops.put(Operation.FLOWER,			new OpParams(3.5, 3.0));
@@ -251,7 +251,12 @@ public class TreeParameters {
 		OpParams p = this.ops.get(op);
 		return p.loudness;
 	}
-	
+
+	public double getOperationChannels(Operation op) {
+		OpParams p = this.ops.get(op);
+		return p.channels;
+	}
+
 	AnimationMode getAnimationMode() {
 		return animationMode;
 	}
