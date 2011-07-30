@@ -20,7 +20,7 @@ doc:
 	javadoc -public -sourcepath src -subpackages vash -overview src/overview.html -breakiterator -d doc -use -version -windowtitle "Vash Documentation" -linksource
 
 jar:
-	jar cfm Vash.jar src/manifest.mf -C bin vash/ -C bin ec/
+	jar cfm Vash.jar src/manifest.mf -C bin vash/ -C bin ec/ -C bin util/
 
 dist: jar doc
 	mkdir -p dist

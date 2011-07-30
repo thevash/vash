@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import util.Base64;
+
 /**
  * Encapsulate command line options and option processing.
  */
@@ -47,8 +49,8 @@ public class Options {
 			"  -d,--data   [String]  The data to hash, as a string\n" +
 			"  -f,--file   [String]  The data, read from a file (use - to read from stdin)\n" +
 			"  -s,--salt   [String]  Provide a salt to the hashing algorithm.  This value\n" + 
-			"                        will be normalized to the correct length for the\n" +
-			"                        specified algorithm, by appending 0's\n" +
+			"                        should be encoded in base64 and will be normalized to\n" +
+			"                        the correct length for the algorithm, by appending 0's\n" +
 			"  -S,--salt-file\n" +
 			"              [String]  Provide the salt with bytes from a file.  Only as many\n" +
 			"                        bytes will be read as the selected algorithm requires\n" +
@@ -320,7 +322,11 @@ public class Options {
 				setData(opt);
 				haveFile += 1;
 			} else if(arg.equals("--salt") || arg.equals("-s")) {
-				saltBytes = opt.getBytes();
+				try {
+					saltBytes = Base64.decode(opt);
+				} catch(IOException e) {
+					throw new IllegalArgumentException("Failed to decode base64 salt.");
+				}
 			} else if(arg.equals("--salt-file") || arg.equals("-S")) {
 				saltFilename = opt;
 			} else if(arg.equals("--output") || arg.equals("-o")) {
