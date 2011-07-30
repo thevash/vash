@@ -68,7 +68,6 @@ public class Squircle extends OperationNode {
 	public Plane compute(ImageParameters ip) {
 		float[] X = ip.getXValues();
 		float[] Y = ip.getYValues();
-		Plane out = ip.getPlane();
 		float x0, y0, a, b, numer, denom;
 		float x = (float)this.center.getX();
 		float y = (float)this.center.getY();
@@ -77,6 +76,7 @@ public class Squircle extends OperationNode {
 
 		Plane A = _children[0].compute(ip);
 		Plane B = _children[1].compute(ip);
+		Plane out = ip.getPlane();
 	    for(int j = 0; j < ip.getH(); j++ ) {
 	    	y0 = Y[j] - y;
 			for(int i = 0; i < ip.getW(); i++) {

@@ -68,7 +68,6 @@ public class Spiral extends OperationNode {
 	public Plane compute(ImageParameters ip) {
 		float[] X = ip.getXValues();
 		float[] Y = ip.getYValues();
-		Plane out = ip.getPlane();
 		float x0, y0, r, theta, tmp;
 		float twoOverSqrtTwo = (float)(2.0 / Math.sqrt(2.0));
 		float x = (float)this.center.getX();
@@ -77,6 +76,7 @@ public class Spiral extends OperationNode {
 		float b = (float)this.b.getV();
 
 		Plane V = _children[0].compute(ip);
+		Plane out = ip.getPlane();
 	    for(int j = 0; j < ip.getH(); j++ ) {
 	    	y0 = Y[j] - y;
 			for(int i = 0; i < ip.getW(); i++) {
