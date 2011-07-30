@@ -58,7 +58,7 @@ public class LinearGradient1 extends OperationNode {
 		float x1 = (float)p1.getX();
 		float y1 = (float)p1.getY();
 		Plane out = ip.getPlane();
-		float pX, pY, ppX, ppY, pppX, pppY;
+		float pX, pY, ppY;
 		float color;
 		
 		// get angle p0->p1 vector (Note: subtract p0 so we are from the origin)
@@ -80,7 +80,7 @@ public class LinearGradient1 extends OperationNode {
 				pX = X[i] - x0;
 
 				// rotate by ang
-				ppX = pX * ca - pY * sa;
+				//ppX = pX * ca - pY * sa; // Note: we don't need the x component
 				ppY = pX * sa + pY * ca;
 
 				// lightness is distance along p1->p0, but centered at p0
