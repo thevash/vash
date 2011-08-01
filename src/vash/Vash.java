@@ -55,12 +55,17 @@ public class Vash {
 		// load a tree
 		Tree tree = new Tree(tp);
 		
-		// dump the tree if specified
-		if(opts.hasDebugFlag("TREE")) {
-			try {
-				tree.show("-");
-			} catch(IOException e) {
-				System.err.println("IO Error: " + e.getLocalizedMessage());
+		// do debug tasks, if specified
+		if(opts.hasADebugFlagSet("TREE", "ENTROPY")) {
+			if(opts.hasDebugFlag("TREE")) {
+				try {
+					tree.show("-");
+				} catch(IOException e) {
+					System.err.println("IO Error: " + e.getLocalizedMessage());
+				}
+			}
+			if(opts.hasDebugFlag("ENTROPY")) {
+				System.out.format("Entropy Used: %d bits%n", tp.getSeed().getBitsOfEntropyUsed());
 			}
 			return;
 		}

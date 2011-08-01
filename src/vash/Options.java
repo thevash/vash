@@ -250,6 +250,14 @@ public class Options {
 	public boolean hasDebugFlag(String flag) {
 		return debugFlags.contains(flag);
 	}
+	public boolean hasADebugFlagSet(String... flags) {
+		for(String flag : flags) {
+			if(hasDebugFlag(flag)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	
 	public static void showKnownAlgorithms() {
@@ -360,6 +368,8 @@ public class Options {
 				setFrameRate(Double.parseDouble(opt));
 			} else if(arg.equals("--debug-tree")) {
 				setDebugFlag("TREE");
+			} else if(arg.equals("--debug-entropy")) {
+				setDebugFlag("ENTROPY");
 			} else {
 				throw new IllegalArgumentException(String.format("The option \"%s\" is not recognized.", arg));
 			}
