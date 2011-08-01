@@ -18,9 +18,9 @@
  */
 package vash;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -277,7 +277,12 @@ public class Tree {
 	 * @throws IOException
 	 */
 	public void show(String filename) throws IOException {
-		BufferedWriter fp = new BufferedWriter(new FileWriter(filename));
+		OutputStream fp;
+		if(filename.equals("-")) {
+			fp = System.out;
+		} else {
+			fp = new FileOutputStream(filename);
+		}
 		this.tree.show(fp, 0);
 		fp.close();
 	}

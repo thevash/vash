@@ -18,8 +18,8 @@
  */
 package vash.operation;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import vash.ImageParameters;
@@ -137,17 +137,17 @@ abstract public class OperationNode {
 	 * @param fp
 	 * @param level
 	 */
-	public void show(BufferedWriter fp, int level) {
+	public void show(OutputStream fp, int level) {
 		try {
-			for(int i = 0; i < level; i++) fp.write("  ");
-			fp.write(String.format("%s(", this.getClass().getName()));
+			for(int i = 0; i < level; i++) fp.write("  ".getBytes("UTF-8"));
+			fp.write(String.format("%s(", this.getClass().getName()).getBytes("UTF-8"));
 			if(_values != null) {
 				for(int i = 0; i < _values.length; i++) {
-					if(i != 0) fp.write(", ");
-					fp.write(_values[i].toString());
+					if(i != 0) fp.write(", ".getBytes("UTF-8"));
+					fp.write(_values[i].toString().getBytes("UTF-8"));
 				}
 			}
-			fp.write(String.format(")%n"));
+			fp.write(String.format(")%n").getBytes("UTF-8"));
 		} catch(IOException e) {
 			return;
 		}
