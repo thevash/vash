@@ -21,6 +21,7 @@ package test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
 import junit.framework.Assert;
@@ -137,5 +138,43 @@ public class TestSeed {
 			double a = s.nextDouble();
 			Assert.assertEquals(e, a, 0.0001);
 		}
+	}
+
+	private void assertSameSeed(Seed s1, Seed s2) {
+		for(int i = 0; i < 32; i++) {
+			double d1 = s1.nextDouble();
+			double d2 = s2.nextDouble();
+			Assert.assertEquals(d1, d2, 0.000001);
+		}
+	}
+	
+	@Test
+	public void testSaltSeed1Fast() throws UnsupportedEncodingException {
+		// "Iqe4HOR4El" is SXFlNEhPUjRFbA==
+		byte[] seed1 = new byte[512/8];
+		System.arraycopy("Iqe4HOR4El".getBytes("ASCII"), 0, seed1, 0, 10);
+		Seed s1 = getSeedOrFail("1-fast", seed1, "Vash".getBytes("ASCII"));
+		
+		byte[] data = new byte[512/8 + 4];
+		System.arraycopy("Iqe4HOR4El".getBytes("ASCII"), 0, data, 0, 10);
+		System.arraycopy("Vash".getBytes("ASCII"), 0, data, 512/8, 4);
+		Seed s2 = getSeedOrFail("1-fast", null, data);
+		
+		assertSameSeed(s1, s2);
+	}
+
+	@Test
+	public void testSaltSeed1() throws UnsupportedEncodingException {
+		// "Iqe4HOR4El" is SXFlNEhPUjRFbA==
+		byte[] seed1 = new byte[512/8];
+		System.arraycopy("Iqe4HOR4El".getBytes("ASCII"), 0, seed1, 0, 10);
+		Seed s1 = getSeedOrFail("1", seed1, "Vash".getBytes("ASCII"));
+		
+		byte[] data = new byte[512/8 + 4];
+		System.arraycopy("Iqe4HOR4El".getBytes("ASCII"), 0, data, 0, 10);
+		System.arraycopy("Vash".getBytes("ASCII"), 0, data, 512/8, 4);
+		Seed s2 = getSeedOrFail("1", null, data);
+		
+		assertSameSeed(s1, s2);
 	}
 }
