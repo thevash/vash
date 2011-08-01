@@ -44,7 +44,7 @@ public class TestSeed {
 	private Seed getSeedOrFail(String algo, byte[] salt, byte[] data) {
 		vash.Seed s = null;
 		try {
-			s = new Seed(algo, null, new ByteArrayInputStream(data));
+			s = new Seed(algo, salt, new ByteArrayInputStream(data));
 		} catch(NoSuchAlgorithmException e) {
 			System.err.println(e.toString());
 			Assert.assertTrue(false);
