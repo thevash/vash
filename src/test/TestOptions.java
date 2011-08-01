@@ -123,4 +123,14 @@ public class TestOptions {
 		Assert.assertEquals(24, opt.getHeight());
 	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public void testNoSaltDataSharing() {
+		String[] toTest = {
+				"--algorithm", "1",
+				"--output", "output",
+				"--file", "-",
+				"--salt-file", "-",
+		};
+		opt = new vash.Options(toTest);
+	}
 }
