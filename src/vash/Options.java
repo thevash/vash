@@ -309,6 +309,7 @@ public class Options {
 		// track whether we have seen data/file input, so we can warn if we get both
 		int haveData = 0;
 		int haveFile = 0;
+		String dataFilename = null;
 		
 		// record when we find it, so we can set it at the end, 
 		//	after we have the algorithm identifier
@@ -341,6 +342,7 @@ public class Options {
 				haveData += 1;
 			} else if(arg.equals("--file") || arg.equals("-f")) {
 				setData(opt);
+				dataFilename = opt;
 				haveFile += 1;
 			} else if(arg.equals("--salt") || arg.equals("-s")) {
 				try {
@@ -395,6 +397,13 @@ public class Options {
 		}
 		if(Arrays.binarySearch(KNOWN_ALGORITHMS, getAlgorithm()) < 0) {
 			throw new IllegalArgumentException("Unknown seed algorithm: \"" + algorithm + "\"");
+		}
+
+		// Check for the most trivial case where we get the salt and data set from the same
+		//	file.  Naturally, this won't work in all cases as there are many ways to specify
+		//	a single file.  This is just to prevent simple accidents and typos.
+		if(saltFilename != null && dataFilename != null && saltFilename.equals(dataFilename)) {
+			throw new IllegalArgumentException("Salt and Data may not be specified from the same file.");
 		}
 
 		// set the salt if we got one, now that we know we got an algorithm
