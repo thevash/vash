@@ -54,6 +54,16 @@ public class Vash {
 		
 		// load a tree
 		Tree tree = new Tree(tp);
+		
+		// dump the tree if specified
+		if(opts.hasDebugFlag("TREE")) {
+			try {
+				tree.show("-");
+			} catch(IOException e) {
+				System.err.println("IO Error: " + e.getLocalizedMessage());
+			}
+			return;
+		}
 
 		// generate and write out the tree
 		Output out = new Output(op, tree);

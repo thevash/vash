@@ -88,6 +88,10 @@ public class Options {
 	private double period = 15.0; // in seconds
 	private double frameRate = 30.0; // in fps
 
+	// debug flag list
+	private final HashSet<String> debugFlags = new HashSet<String>();
+
+	
 	public InputStream getData() {
 		return data;
 	}
@@ -239,6 +243,15 @@ public class Options {
 		this.frameRate = frameRate;
 	}
 
+	
+	public void setDebugFlag(String flag) {
+		debugFlags.add(flag);
+	}
+	public boolean hasDebugFlag(String flag) {
+		return debugFlags.contains(flag);
+	}
+
+	
 	public static void showKnownAlgorithms() {
 		System.out.println("Known Algorithms:");
 		for(String a : PUBLIC_ALGORITHMS) {
@@ -345,6 +358,8 @@ public class Options {
 				setPeriod(Double.parseDouble(opt));
 			} else if(arg.equals("--frame-rate") || arg.equals("-R")) {
 				setFrameRate(Double.parseDouble(opt));
+			} else if(arg.equals("--debug-tree")) {
+				setDebugFlag("TREE");
 			} else {
 				throw new IllegalArgumentException(String.format("The option \"%s\" is not recognized.", arg));
 			}
