@@ -65,10 +65,10 @@ public class Options {
 			"                        be guessed from the extension of the output option.\n";
 	
 	public static final String[] KNOWN_ALGORITHMS = {
-		"1", "1-fast", "1.1"
+		"1.1", "1", "1-fast"
 	};
-	public static final String[] PUBLIC_ALGORITHMS = {
-		"1.1"
+	public static final String[] DEPRECATED_ALGORITHMS = {
+		"1", "1-fast"
 	};
 	
 	// tree arguments
@@ -261,9 +261,17 @@ public class Options {
 
 	
 	public static void showKnownAlgorithms() {
+		HashSet<String> depricated = new HashSet<String>();
+		for(String a : DEPRECATED_ALGORITHMS) {
+			depricated.add(a);
+		}
 		System.out.println("Known Algorithms:");
-		for(String a : PUBLIC_ALGORITHMS) {
-			System.out.format("\t%s%n", a);
+		for(String a : KNOWN_ALGORITHMS) {
+			System.out.format("\t%s", a);
+			if(depricated.contains(a)) {
+				System.out.print("\t(deprecated)");
+			}
+			System.out.println("");
 		}
 	}
 
