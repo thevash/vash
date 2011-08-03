@@ -317,6 +317,10 @@ public class Seed {
 	}
 
 
+	/**
+	 * Get and return the next double from the seed.
+	 * @return
+	 */
 	public double nextDouble() {
 		double d = 0.0;
 		if(this.hvac != null)
@@ -330,6 +334,11 @@ public class Seed {
 	}
 	
 	
+	/**
+	 * Get and return the next int value in range [0,n) from the seed.
+	 * @param n
+	 * @return
+	 */
 	public int nextInt(int n) {
 		int i;
 		if(this.hvac != null)
