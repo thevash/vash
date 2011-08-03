@@ -25,17 +25,13 @@ package vash.operation;
 public class OpParams {
 	public final double ratio;
 	public final double channels;
-	public final double loudness;
-	
 	public OpParams(double ratio) {
 		this.ratio = ratio;
 		this.channels = 3.0;
-		this.loudness = 0.0;
 	}
 
 	public OpParams(double ratio, double channels) {
 		this.ratio = ratio;
 		this.channels = channels;
-		this.loudness = 0.0;
 	}
 }

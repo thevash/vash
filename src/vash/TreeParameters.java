@@ -247,11 +247,6 @@ public class TreeParameters {
 		return p.ratio;
 	}
 
-	public double getOperationLoudness(Operation op) {
-		OpParams p = this.ops.get(op);
-		return p.loudness;
-	}
-
 	public double getOperationChannels(Operation op) {
 		OpParams p = this.ops.get(op);
 		return p.channels;
