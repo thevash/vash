@@ -24,7 +24,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import util.Base64;
@@ -403,7 +402,11 @@ public class Options {
 		if(getAlgorithm() == null) {
 			throw new IllegalArgumentException("The option -a or --algorithm must be set.");
 		}
-		if(Arrays.binarySearch(KNOWN_ALGORITHMS, getAlgorithm()) < 0) {
+		HashSet<String> knownAlgos = new HashSet<String>();
+		for(String algo : KNOWN_ALGORITHMS) {
+			knownAlgos.add(algo);
+		}
+		if(!knownAlgos.contains(getAlgorithm())) {
 			throw new IllegalArgumentException("Unknown seed algorithm: \"" + algorithm + "\"");
 		}
 
