@@ -230,23 +230,45 @@ public class TreeParameters {
 		this.fps = 30.0;
 	}
 	
+	/**
+	 * Get the seed.
+	 * @return
+	 */
 	public Seed getSeed() {
 		return seed;
 	}
 
+	/**
+	 * Get the minimum tree depth.
+	 * @return
+	 */
 	public short getMinDepth() {
 		return minDepth;
 	}
 
+	/**
+	 * Get the maximum tree depth.
+	 * @return
+	 */
 	public short getMaxDepth() {
 		return maxDepth;
 	}
 
+	/**
+	 * Get the relative frequency of appearance of the given node type.
+	 * @param op
+	 * @return
+	 */
 	public double getOperationRatio(Operation op) {
 		OpParams p = this.ops.get(op);
 		return p.ratio;
 	}
 
+	/**
+	 * Get the maximum channel count the given operation can appear in. 
+	 * @param op
+	 * @return
+	 */
 	public double getOperationChannels(Operation op) {
 		OpParams p = this.ops.get(op);
 		return p.channels;

@@ -25,11 +25,21 @@ package vash.operation;
 public class OpParams {
 	public final double ratio;
 	public final double channels;
+
+	/**
+	 * Instantiate a new operation parameters with a default channels count of 3.
+	 * @param ratio
+	 */
 	public OpParams(double ratio) {
 		this.ratio = ratio;
 		this.channels = 3.0;
 	}
 
+	/**
+	 * Instantiate a new operation parameters.
+	 * @param ratio
+	 * @param channels
+	 */
 	public OpParams(double ratio, double channels) {
 		this.ratio = ratio;
 		this.channels = channels;

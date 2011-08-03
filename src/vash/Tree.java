@@ -104,6 +104,7 @@ public class Tree {
 	
 	/**
 	 * Construct a tree with the given tree parameters.
+	 * @param params TreeParameters that will define this tree
 	 */
 	public Tree(TreeParameters params) {
 		this.params = params;
