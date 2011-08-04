@@ -59,18 +59,26 @@ Vash can be run from the command-line with:
 * **-a/--algorithm <algorithm id>**
 
 _What is the algorithm id?:_
-	Although Vash only has one core mechanism, it is possible to tweak the parameters of this mechanism to achieve wildly different results.  When, at some point in the future, we want to extend Vash with ever more variety, we will need to tweak these parameters.  If we did so universally, it would not be possible to upgrade, ever.  Thus, when you want to hash some data, you must specify the specific algorithm parameters you want.  The algorithm id is a string; at the moment there are only two algorithms: "1" and "1-fast".
+	Although Vash only has one core mechanism, it is possible to tweak the parameters of this mechanism to achieve wildly different results.  When, at some point in the future, we want to extend Vash with ever more variety, we will need to tweak these parameters.  If we did so universally, it would not be possible to upgrade, ever.  Thus, when you want to hash some data, you must specify the specific algorithm parameters you want.  The algorithm id is a string; at the moment you should use "1.1"..
 
 _How do I use it?:_
 	The algorithm is a required parameter because we want you to be able to upgrade to new algorithms as they are released.  If you do not store this id with your data, then you will have to assume a single algorithm, application wide.  Instead, you should think of this value like a salt.  Store it with the data you are hashing and when you add new data to the system, you can use any algorithm you want, rather than being constrained to always use the algorithm that was most recent when you first integrated Vash.
 
-_What is the difference between the algorithms?:_
-	"1-fast" is slightly faster than "1" on large data sets, but is significantly less secure:  it uses md5 internally instead of sha-512.  Only use "1-fast" if you have specific performance problems with "1".
-
-
 * **-d/--data <string>**
 
 	This is simply the data you are going to hash.
+
+* **-f/--file <string>**
+
+	A file while we will read fully and use as the input data.  Specifying - here will cause us to read from stdin.
+
+* ** -s/--salt <string>**
+
+	A Base64 encoded salt for use with the algorithm.  The salt will be padded with 0's or truncated to make it the correct length for the algorithm.  A different salt will produce a different image for the same algorithm id and data.
+
+* **-S/--salt-file**
+
+	Provide the salt bytes from a file.  Only as many bytes as are needed will be read from the file.  Specify - to read from stdin.  The salt file and data file should never be set to the same source.
 
 
 ###Optional Arguments:
@@ -79,11 +87,15 @@ _What is the difference between the algorithms?:_
 
 	By default Vash will write its output to "output.png" in the current directory, overwriting anything by that name already there.  Use this option to specify a different output file.  Supported extensions are "png", "jpg", and "bmp".  Vash will automatically select the correct format, based on the extension.  You may also specify a dash "-" to write the output file to stdout.  The format in this case will be assumed to be png.
 
+* **-F/--format <string>**
+
+	One of "bmp", "jpeg", or "png".  If not set, this will discover the filetype based on the file extension specified for --output.  This is mostly useful with output to stdout.
+
 * **-w/--width <int>**
 * **-h/--height <int>**
 
 	The default image size is 128x128.  Vash images are always logically square.  If you double the width, you will get the same square image, but stretched out.  If the distortion is small, this is probably fine for most applications.  If you want to get non-square images that preserve Vash's look across a larger distortion, we suggest that you generate a square image with the larger dimension and then crop to scale, e.g. with ImageMagick's command line tools.
-	
+
 _For example:_
 
 * java -jar Vash.jar -a 1 -d "Foo" -w 1920 -h 1920 -o desktop.png
