@@ -20,6 +20,7 @@ package vash;
 
 import java.util.LinkedList;
 
+
 /**
  * Encapsulate all of the image generation data that is needed by a
  * node to compute values for itself.
@@ -30,7 +31,10 @@ public class ImageParameters {
 	final private float[] X;
 	final private float[] Y;
 	private final LinkedList<Plane> cache;
-
+	private long _puts = 0;
+	private long _gets = 0;
+	private final static long MAX_CACHE_SIZE = 64 * 1024 * 1024;
+	private final static boolean DEBUG = false;
 	
 	/**
 	 * Initialize a new set of image parameters for the given width and height.
@@ -88,6 +92,12 @@ public class ImageParameters {
 	 * initialized to any specific value.
 	 */
 	public Plane getPlane() {
+		_gets += 1;
+		if(DEBUG) {
+			long tmp = ((_gets - _puts) + cache.size()) * (w * h * 4);
+			System.out.format("GetPlane: %d gets, %d puts, %d out, %d cached: %d%n", 
+					_gets, _puts, _gets - _puts, cache.size(), tmp);
+		}
 		if(cache.size() > 0) {
 			return cache.removeFirst();
 		}
@@ -99,7 +109,11 @@ public class ImageParameters {
 	 * rather than re-allocating new, massive arrays constantly.
 	 */
 	public void putPlane(Plane p) {
-		cache.addFirst(p);
+		_puts += 1;
+		long outstanding = ((_gets - _puts) + cache.size()) * (w * h * 4);
+		if(outstanding < MAX_CACHE_SIZE) {
+			cache.addFirst(p);
+		}
 	}
 	
 	/**

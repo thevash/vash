@@ -48,10 +48,10 @@ public class RGB_Space extends ColorNode {
 	public byte[] compute(ImageParameters ip, boolean this_method_is_different) {
 		int w = ip.getW();
 		int h = ip.getH();
-		byte pix[] = new byte[w * h * 3];
 		Plane R = _children[0].compute(ip);
 		Plane G = _children[1].compute(ip);
 		Plane B = _children[2].compute(ip);
+		byte pix[] = new byte[w * h * 3];
 
 		int index = 0;
 		for (int y = h - 1; y >= 0; y--) {

@@ -43,11 +43,19 @@ public final class OperationFactory {
 		case SQUIRCLE: 			return new Squircle(s);
 		// LEAF
 		case CONST: 			return new Const(s);
+		case ELLIPSE:			return new Ellipse(s);
 		case FLOWER: 			return new Flower(s);
-		case GRADIENT_LINEAR: 	return new LinearGradient(s);
+		case GRADIENT_LINEAR: 	return createLinearGradient(s);
 		case GRADIENT_RADIAL: 	return new RadialGradient(s);
 		case POLAR_THETA: 		return new PolarTheta(s);
 		}
 		throw new IllegalArgumentException("Unknown operation type: " + type.toString());
+	}
+	
+	private static OperationNode createLinearGradient(Seed s) {
+		String algo = s.getAlgorithm();
+		if(algo.equals("1") || algo.equals("1-fast"))
+			return new LinearGradient(s);
+		return new LinearGradient1(s);
 	}
 }

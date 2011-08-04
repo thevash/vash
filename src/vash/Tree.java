@@ -18,12 +18,12 @@
  */
 package vash;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import vash.operation.ColorNode;
 import vash.operation.Operation;
@@ -32,22 +32,37 @@ import vash.operation.OperationNode;
 import vash.value.Value;
 
 
+
 /**
  * A tree of operations which represent the computation of an image.
  */
 public class Tree {
+	/*
+	 * ChannelParameters overlays TreeParameters, masking or augmenting values as needed on a
+	 * per channel basis.
+	 */
+	class ChannelParameters {
+		// operations which are excluded from inclusion in this channel
+		HashSet<Operation> exclude;
+
+		ChannelParameters() {
+			exclude = new HashSet<Operation>();
+		}
+		
+		void addExclude(Operation op) {
+			exclude.add(op);
+		}
+
+		boolean isExcluded(Operation op) {
+			return exclude.contains(op);
+		}
+	}
+	
 	// we use these at class construction to precompute values
 	private static <T> T[] concat(T[] first, T[] second) {
 		T[] result = Arrays.copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
-	}
-	private double _totalFreq(Operation[] data) {
-		double sum = 0.0;
-		for(Operation item : data) {
-			sum += this.params.getOperationRatio(item);
-		}
-		return sum;
 	}
 	
 	// operation sets for our guided random walks
@@ -72,18 +87,13 @@ public class Tree {
 			};
 	private static final Operation[] LEAFS = {
 			Operation.CONST,
+			Operation.ELLIPSE,
 			Operation.FLOWER,
 			Operation.GRADIENT_LINEAR,
 			Operation.GRADIENT_RADIAL,
 			Operation.POLAR_THETA,
 			};
 	private static final Operation [] NODES_AND_LEAFS = concat(NODES, LEAFS);
-
-	// pre-compute our total frequencies when we learn our generation parameters
-	private final double TOPS_total;
-	private final double NODES_total;
-	private final double LEAFS_total;
-	private final double NODES_AND_LEAFS_total;
 
 	// tree parameters
 	private final TreeParameters params;
@@ -94,46 +104,151 @@ public class Tree {
 	
 	/**
 	 * Construct a tree with the given tree parameters.
+	 * @param params TreeParameters that will define this tree
 	 */
 	public Tree(TreeParameters params) {
 		this.params = params;
-		TOPS_total = _totalFreq(TOPS);
-		NODES_total = _totalFreq(NODES);
-		LEAFS_total = _totalFreq(LEAFS);
-		NODES_AND_LEAFS_total = NODES_total + LEAFS_total;
 
-		this.tree = (ColorNode)this._buildNode(0);
+		this.tree = this._buildToplevel();
 		this.tree.accumulateValues(this.values);
 	}
 
+	
+	/**
+	 * Not for public use.
+	 * @param s
+	 * @param count
+	 * @return
+	 */
+	public static boolean[] __buildChannelMask(Seed s, int count) {
+		switch(count) {
+		case 3: return new boolean[] {true, true, true};
+		case 2:
+			switch(s.nextInt(3)) {
+			case 0: return new boolean[] {false, true, true};
+			case 1: return new boolean[] {true, false, true};
+			case 2: return new boolean[] {true, true, false};
+			}
+		case 1:
+			switch(s.nextInt(3)) {
+			case 0: return new boolean[] {true, false, false};
+			case 1: return new boolean[] {false, true, false};
+			case 2: return new boolean[] {false, false, true};
+			}
+		case 0: return new boolean[] {false, false, false};
+		default: throw new IllegalArgumentException("BuildChannelMask needs count in [0..3]");
+		}
+	}
+	
 
-	private OperationNode _buildNode(int level) {
-		OperationNode op = _selectAndCreateOp(level);
+	/**
+	 * Not for public use.
+	 * @param s
+	 * @param channels
+	 * @return
+	 */
+	public static int __getChannelExclusionCount(Seed s, double channels) {
+		// NOTE: we have not touched these doubles at all, so it is safe to compare directly here
+		if(channels <= 0.0) { // 0 channels
+			return 3;
+		} else if(channels > 0.0 && channels < 1.0) { // maybe 1 channel
+			if(s.nextDouble() > channels) // larger number in channels = higher probability 2 (not 3)
+				return 3;
+			else
+				return 2;
+		} else if(channels == 1.0) { // 1 channel
+			return 2;
+		} else if(channels > 1.0 && channels < 2.0) { // 1 and maybe 2 channels
+			if(s.nextDouble() > (channels - 1.0)) // larger number in channels = higher probability 1 (not 2)
+				return 2;
+			else
+				return 1;
+		} else if(channels == 2.0) { // 2 channel
+			return 1;
+		} else if(channels > 2.0 && channels < 3.0) { // 2 and maybe 3 channels
+			if(s.nextDouble() > (channels - 2.0)) // larger number in channels = higher probability 0 (not 1)
+				return 1;
+			else
+				return 0;
+		}
+		// 3 channels: no exclusions
+		return 0;
+	}
+	
+	// drive channel exclusion selection for each operation on each channel
+	private void _setupChannelExclusions(ChannelParameters[] chans) {
+		Seed s = params.getSeed();
+		for(Operation op : NODES_AND_LEAFS) {
+			double n_channels = params.getOperationChannels(op);
+			int n_exclude = __getChannelExclusionCount(s, n_channels);
+			boolean[] exclude = __buildChannelMask(s, n_exclude);
+			for(int i = 0; i < 3; i++) {
+				if(exclude[i]) {
+					chans[i].addExclude(op);
+				}
+			}
+		}
+	}
+	
+	private ColorNode _buildToplevel() {
+		// only allow one plane to have the singleton class
+		if(this.params.getSeed().getAlgorithm().equals("1.1")) {
+			// toplevel (color) node
+			ColorNode rgb = (ColorNode)_selectAndCreateOp(0, new ChannelParameters());
+			
+			// channel parameters
+			ChannelParameters[] chan = {
+					new ChannelParameters(),
+					new ChannelParameters(),
+					new ChannelParameters()
+			};
+			_setupChannelExclusions(chan);
+			
+			// build each channel and attach to color node
+			OperationNode r = _buildNode(1, chan[0]);
+			OperationNode g = _buildNode(1, chan[1]);
+			OperationNode b = _buildNode(1, chan[2]);
+			rgb.setChild(0, r);
+			rgb.setChild(1, g);
+			rgb.setChild(2, b);
+
+			return rgb;
+		} else {
+			return (ColorNode)_buildNode(0, new ChannelParameters());
+		}
+	}
+
+	
+	private OperationNode _buildNode(int level, ChannelParameters chan) {
+		OperationNode op = _selectAndCreateOp(level, chan);
 		for(int i = 0; i < op.getChildCount(); i++) {
-			OperationNode child = _buildNode(level + 1);
+			OperationNode child = _buildNode(level + 1, chan);
 			op.setChild(i, child);
 		}
 		return op;
 	}
 	
-	private OperationNode _selectAndCreateOp(int level) {
+	
+	private Operation _selectOp(int level, ChannelParameters chan) {
 		// select list of ops to select from
 		Operation[] ops;
-		double total;
 		double rand, pos;
 
 		if(level == 0) {
 			ops = TOPS;
-			total = TOPS_total;
 		} else if(level <= this.params.getMinDepth()) {
 			ops = NODES;
-			total = NODES_total;
 		} else if(level >= this.params.getMaxDepth()) {
 			ops = LEAFS;
-			total = LEAFS_total;
 		} else {
 			ops = NODES_AND_LEAFS;
-			total = NODES_AND_LEAFS_total;
+		}
+
+		// compute the total for our ops
+		double total = 0.0;
+		for(Operation op : ops) {
+			if(chan.isExcluded(op)) { continue; }
+			total += this.params.getOperationRatio(op);
 		}
 		
 		// get a random number in [0, total]
@@ -141,24 +256,34 @@ public class Tree {
 		
 		// walk the table until we find our op
 		pos = 0.0;
-		for(Operation item : ops) {
-			pos += this.params.getOperationRatio(item);
+		for(Operation op : ops) {
+			if(chan.isExcluded(op)) { continue; }
+			pos += this.params.getOperationRatio(op);
 			if(pos > rand) {
-				return OperationFactory.createNode(item, this.params.getSeed());
+				return op;
 			}
 		}
 		
 		throw new RuntimeException("Overflowed our OperationytecodeTable somehow at level: " + Integer.toString(level));
 	}
 	
+	
+	private OperationNode _selectAndCreateOp(int level, ChannelParameters chan) {
+		return OperationFactory.createNode(_selectOp(level, chan), this.params.getSeed());
+	}
+	
+	
 	/**
 	 * Write a string representation of this tree to a given filename. 
 	 * @throws IOException
 	 */
 	public void show(String filename) throws IOException {
-		BufferedWriter fp = new BufferedWriter(new FileWriter(filename));
-		String hexdigest = new BigInteger(1, this.params.getSeed().getSeedBase()).toString(16);
-		fp.write(String.format("Seed: %s%n", hexdigest));
+		OutputStream fp;
+		if(filename.equals("-")) {
+			fp = System.out;
+		} else {
+			fp = new FileOutputStream(filename);
+		}
 		this.tree.show(fp, 0);
 		fp.close();
 	}

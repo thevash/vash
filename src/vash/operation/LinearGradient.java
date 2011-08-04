@@ -46,12 +46,6 @@ public class LinearGradient extends OperationNode {
 	public LinearGradient clone() {
 		return new LinearGradient(p0.clone(), p1.clone());
 	}
-	
-	private float _dist(float x0, float y0, float x1, float y1) {
-		float xp = x1 - x0;
-		float yp = y1 - y0;
-		return (float)Math.sqrt(xp * xp + yp * yp);
-	}
 
 	private void _computeInternal(
 			Plane out, float w, float h, 
@@ -62,15 +56,15 @@ public class LinearGradient extends OperationNode {
 		denom = x1 - x0;
         m = (y1 - y0) / denom;
         b = m * x0 - y0;
-        d0to1 = _dist(x0, y0, x1, y1);
+        d0to1 = distance(x0, y0, x1, y1);
 
 	    for(int j = 0; j < h; j++ ) {
 			for(int i = 0; i < w; i++) {
 				intX = (m * Y[j] + X[i] - m * b) / (m * m + 1);
 				intY = (m * m * Y[j] + m * X[i] + b) / (m * m + 1);
 				
-				d0toInt = _dist(x0, y0, intX, intY);
-				d1toInt = _dist(x1, y1, intX, intY);
+				d0toInt = distance(x0, y0, intX, intY);
+				d1toInt = distance(x1, y1, intX, intY);
 				d = d0toInt / d0to1;
 				
 				if((d0toInt + d1toInt) > (d0to1 + 0.0001)) {
@@ -103,7 +97,7 @@ public class LinearGradient extends OperationNode {
 		denom = x1 - x0;
 		if(denom < 0.1f) {
 			/*
-			 * Since we use the slope to compute the gradent, we have a nasty
+			 * Since we use the slope to compute the gradient, we have a nasty
 			 * singularity when the slope is infinite.  If the slope is near
 			 * infinite, we compute the gradient on the plane mirrored about
 			 * y=x and then flip the result back when we are done.

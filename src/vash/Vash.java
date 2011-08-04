@@ -19,6 +19,10 @@
 package vash;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -26,8 +30,8 @@ import java.awt.image.BufferedImage;
  */
 public class Vash {
 	public static final int MAJOR_VERSION = 1;
-	public static final int MINOR_VERSION = 0;
-	public static final int REVISION = 1;
+	public static final int MINOR_VERSION = 1;
+	public static final int REVISION = 0;
 	public static final String VERSION = String.format("%d.%d.%d", MAJOR_VERSION, MINOR_VERSION, REVISION);
 	
 	/**
@@ -35,36 +39,98 @@ public class Vash {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// parse arguments
+		// parse arguments and load parameters
 		Options opts = null;
+		TreeParameters tp = null;
+		OutputParameters op = null;
 		try {
 			opts = new Options(args);
+			tp = TreeParameters.createInstanceOrDie(opts);
+			op = new OutputParameters(opts);
 		} catch(IllegalArgumentException e) {
-			System.out.println("Error: " + e.getMessage());
+			System.err.println("Error: " + e.getLocalizedMessage());
 			System.exit(1);
 		}
 		
 		// load a tree
-		TreeParameters tp = new TreeParameters(opts);
 		Tree tree = new Tree(tp);
+		
+		// do debug tasks, if specified
+		if(opts.hasADebugFlagSet("TREE", "ENTROPY")) {
+			if(opts.hasDebugFlag("TREE")) {
+				try {
+					tree.show("-");
+				} catch(IOException e) {
+					System.err.println("IO Error: " + e.getLocalizedMessage());
+				}
+			}
+			if(opts.hasDebugFlag("ENTROPY")) {
+				System.out.format("Entropy Used: %d bits%n", tp.getSeed().getBitsOfEntropyUsed());
+			}
+			return;
+		}
 
 		// generate and write out the tree
-		OutputParameters op = new OutputParameters(opts);
 		Output out = new Output(op, tree);
-		out.generate();
+		try {
+			out.generate();
+		} catch(IOException e) {
+			System.err.println("IO Error: " + e.getLocalizedMessage());
+			System.exit(1);
+		}
 	}
 
+	
 	/**
-	 * The super-high-level interface to Vash.  This takes an algorithm 
-	 * specifier, data, and the requested width and height and will return
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * data as a String, and the requested width and height and will return
 	 * the image for the given algorithm and data.
 	 * @param algorithm The algorithm selector (see documentation)
 	 * @param data the data to hash
 	 * @param width the output image width
 	 * @param height the output image height
 	 */
-	public static BufferedImage createImage(String algorithm, byte[] data, int width, int height) {
-		TreeParameters tp = new TreeParameters(data, algorithm);
+	public static BufferedImage createImage(String algorithm, String data, int width, int height)
+			throws NoSuchAlgorithmException
+	{
+		return createImage(algorithm, data.getBytes(), width, height);
+	}
+
+	
+	/**
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * data as a byte array, and the requested width and height and will return
+	 * the image for the given algorithm and data.
+	 * @param algorithm The algorithm selector (see documentation)
+	 * @param data the data to hash
+	 * @param width the output image width
+	 * @param height the output image height
+	 */
+	public static BufferedImage createImage(String algorithm, byte[] data, int width, int height)
+			throws NoSuchAlgorithmException
+	{
+		try {
+			InputStream dataStream = new ByteArrayInputStream(data);
+			return createImage(algorithm, dataStream, width, height);
+		} catch(IOException e) { // not going to happen on a ByteArrayInputStream
+			return null;
+		}
+	}
+
+	
+	/**
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * data as an input stream, and the requested width and height and will return
+	 * the image for the given algorithm and data.
+	 * @param algorithm The algorithm selector (see documentation)
+	 * @param data the data to hash
+	 * @param width the output image width
+	 * @param height the output image height
+	 */
+	public static BufferedImage createImage(String algorithm, InputStream dataStream, int width, int height)
+			throws IOException, NoSuchAlgorithmException
+	{
+		TreeParameters tp = new TreeParameters(algorithm, null, dataStream);
 		Tree tree = new Tree(tp);
 
 		ImageParameters ip = new ImageParameters(width, height);
@@ -73,13 +139,69 @@ public class Vash {
 		byte[] pix = tree.generateCurrentFrame();
 		return Output.dataToImage(pix, width, height);
 	}
+
+	
+
+	/**
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * a salt, data as a String, and the requested width and height and will return
+	 * the image for the given algorithm and data.
+	 * @param algorithm The algorithm selector (see documentation)
+	 * @param salt the salt value, appropriately sized for algorithm
+	 * @param data the data to hash
+	 * @param width the output image width
+	 * @param height the output image height
+	 */
+	public static BufferedImage createImage(String algorithm, byte[] salt, String data, int width, int height)
+			throws NoSuchAlgorithmException
+	{
+		return createImage(algorithm, salt, data.getBytes(), width, height);
+	}
+
 	
 	/**
-	 * Like the other createImage, but takes a String as data.  This is only
-	 * a convenience method and simply calls getBytes on the data.
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * a salt, data as a byte array, and the requested width and height and will return
+	 * the image for the given algorithm and data.
+	 * @param algorithm The algorithm selector (see documentation)
+	 * @param salt the salt value, appropriately sized for algorithm
+	 * @param data the data to hash
+	 * @param width the output image width
+	 * @param height the output image height
 	 */
-	public static BufferedImage createImage(String algorithm, String data, int width, int height) {
-		return createImage(algorithm, data.getBytes(), width, height);
+	public static BufferedImage createImage(String algorithm, byte[] salt, byte[] data, int width, int height)
+			throws NoSuchAlgorithmException
+	{
+		try {
+			return createImage(algorithm, salt, new ByteArrayInputStream(data), width, height);
+		} catch(IOException e) { // not going to happen on a ByteArrayInputStream
+			return null;
+		}
 	}
+
+
+	/**
+	 * The super-high-level interface to Vash.  This takes an algorithm  specifier, 
+	 * a salt, data as a Stream, and the requested width and height and will return
+	 * the image for the given algorithm and data.
+	 * @param algorithm The algorithm selector (see documentation)
+	 * @param salt the salt value, appropriately sized for algorithm
+	 * @param data the data to hash
+	 * @param width the output image width
+	 * @param height the output image height
+	 */
+	public static BufferedImage createImage(String algorithm, byte[] salt, InputStream data, int width, int height)
+			throws IOException, NoSuchAlgorithmException
+	{
+		TreeParameters tp = new TreeParameters(algorithm, salt, data);
+		Tree tree = new Tree(tp);
+
+		ImageParameters ip = new ImageParameters(width, height);
+		tree.setGenerationParameters(ip);
+		
+		byte[] pix = tree.generateCurrentFrame();
+		return Output.dataToImage(pix, width, height);
+	}
+
 }
 

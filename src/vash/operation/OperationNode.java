@@ -18,8 +18,8 @@
  */
 package vash.operation;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import vash.ImageParameters;
@@ -96,6 +96,16 @@ abstract public class OperationNode {
 		assert(_children[offset] == null);
 		_children[offset] = child;
 	}
+	
+	/**
+	 * Return the node at offset position.
+	 * @param offset must be less than n_children.
+	 * @return
+	 */
+	public OperationNode getChild(int offset) {
+		assert(offset < _children.length);
+		return _children[offset];
+	}
 
 	/**
 	 * Return a reference to this nodes array of values.
@@ -127,17 +137,17 @@ abstract public class OperationNode {
 	 * @param fp
 	 * @param level
 	 */
-	public void show(BufferedWriter fp, int level) {
+	public void show(OutputStream fp, int level) {
 		try {
-			for(int i = 0; i < level; i++) fp.write("  ");
-			fp.write(String.format("%s(", this.getClass().getName()));
+			for(int i = 0; i < level; i++) fp.write("  ".getBytes("UTF-8"));
+			fp.write(String.format("%s(", this.getClass().getName()).getBytes("UTF-8"));
 			if(_values != null) {
 				for(int i = 0; i < _values.length; i++) {
-					if(i != 0) fp.write(", ");
-					fp.write(_values[i].toString());
+					if(i != 0) fp.write(", ".getBytes("UTF-8"));
+					fp.write(_values[i].toString().getBytes("UTF-8"));
 				}
 			}
-			fp.write(String.format(")%n"));
+			fp.write(String.format(")%n").getBytes("UTF-8"));
 		} catch(IOException e) {
 			return;
 		}
@@ -154,7 +164,21 @@ abstract public class OperationNode {
 	protected static float clampf(float in, float lower, float upper) {
 		return Math.min(Math.max(in, lower), upper);
 	}
-	
+
+	/**
+	 * A utility function used by many nodes when computing values.
+	 * @param x0
+	 * @param y0
+	 * @param x1
+	 * @param y1
+	 * @return
+	 */
+	protected static float distance(float x0, float y0, float x1, float y1) {
+		float xp = x1 - x0;
+		float yp = y1 - y0;
+		return (float)Math.sqrt(xp * xp + yp * yp);
+	}
+
 	/**
 	 * Create and return a completely independent copy of this node.
 	 */

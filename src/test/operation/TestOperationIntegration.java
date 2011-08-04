@@ -37,10 +37,12 @@ import vash.operation.Add;
 import vash.operation.ColorNode;
 import vash.operation.Const;
 import vash.operation.Divide;
+import vash.operation.Ellipse;
 import vash.operation.Exponentiate;
 import vash.operation.Flower;
 import vash.operation.Invert;
 import vash.operation.LinearGradient;
+import vash.operation.LinearGradient1;
 import vash.operation.Modulus;
 import vash.operation.Multiply;
 import vash.operation.OperationNode;
@@ -116,7 +118,12 @@ public class TestOperationIntegration {
 		// write out the diff before asserting, so we have it even if we fail
 		if(diff_out != null) {
 			BufferedImage bdiff = Output.dataToImage(diff, w, h);
-			Output.writeImageFile(diff_out, "png", bdiff);
+			try {
+				Output.writeImageFile(diff_out, "png", bdiff);
+			} catch(IOException e) {
+				System.err.println(e.toString());
+				Assert.assertTrue(false);
+			}
 		}
 
 		for(int y = 0; y < h; y++) {
@@ -149,7 +156,12 @@ public class TestOperationIntegration {
 		
 		// write the image to show what we got so we can compare on failures
 		BufferedImage bactual = Output.dataToImage(actual, w, h);
-		Output.writeImageFile("./test/result/" + test + ".png", "png", bactual);
+		try {
+			Output.writeImageFile("./test/result/" + test + ".png", "png", bactual);
+		} catch(IOException e) {
+			System.err.println(e.toString());
+			Assert.assertTrue(false);
+		}
 
 		compare(actual, w, h, "./test/goal/" + test + ".png", "test/diff/" + test + ".png");
 		
@@ -173,7 +185,7 @@ public class TestOperationIntegration {
 	@Test public void testConstBlue() 	{ this.runTest("1103", c1N(), c1N(), c1P()); }
 	@Test public void testConstMagenta(){ this.runTest("1104", c1P(), c1N(), c1P()); }
 	
-	// linear gradient / plane orientation tests
+	// linear gradient
 	@Test public void testLinGradDiagLeftFill()  { this.runTest("2101", new LinearGradient(0, 0, 1, 1)); }
 	@Test public void testLinGradDiagRightFill() { this.runTest("2102", new LinearGradient(-1, -1, 0, 0)); }
 	// Note: the rest of these codify existing, non-optimal behavior
@@ -200,6 +212,52 @@ public class TestOperationIntegration {
 		this.ip = new ImageParameters(256, 128);
 		this.opt.setWidth(256);
 		this.runTest("2110", new LinearGradient(0, -1, 0.09, 1)); }
+
+	// new linear gradient
+	@Test public void testLinGrad1DiagLeftFill()  { this.runTest("2111", new LinearGradient1(0, 0, 1, 1)); }
+	@Test public void testLinGrad1DiagRightFill() { this.runTest("2112", new LinearGradient1(-1, -1, 0, 0)); }
+	@Test public void testLinGrad1DiagNorthSouth(){ this.runTest("2113", new LinearGradient1(0, -1, 0, 1)); }
+	@Test public void testLinGrad1DiagSouthNorth(){ this.runTest("2114", new LinearGradient1(0, 1, 0, -1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouth() {
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2115", new LinearGradient1(0, -1, 0, 1));
+	}
+	@Test public void testLinGrad1DiagNonSquareSouthNorth() {
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2116", new LinearGradient1(0, 1, 0, -1)); }
+	@Test public void testLinGrad1DiagNorthSouthTiltedBig()  { 
+		this.runTest("2117", new LinearGradient1(0, -1, 1, 1)); }
+	@Test public void testLinGrad1DiagNorthSouthTiltedSmall()  { 
+		this.runTest("2118", new LinearGradient1(0, -1, 0.09, 1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouthTiltedBig()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2119", new LinearGradient1(0, -1, 1, 1)); }
+	@Test public void testLinGrad1DiagNonSquareNorthSouthTiltedSmall()  { 
+		this.ip = new ImageParameters(256, 128);
+		this.opt.setWidth(256);
+		this.runTest("2120", new LinearGradient1(0, -1, 0.09, 1)); }
+
+	// linear gradient do a full planar rotation
+	LinearGradient1 getLinGrad(double deg) {
+		double rad = Math.PI * deg / 180.0;
+		double x0 = Math.sin(rad) / 2.0;
+		double y0 = Math.cos(rad) / 2.0;
+		return new LinearGradient1(x0, y0, -x0, -y0);
+	}
+	@Test public void testLinGrad0() {this.runTest("2130", getLinGrad(0));}
+	@Test public void testLinGrad1() {this.runTest("2131", getLinGrad(36));}
+	@Test public void testLinGrad2() {this.runTest("2132", getLinGrad(72));}
+	@Test public void testLinGrad3() {this.runTest("2133", getLinGrad(108));}
+	@Test public void testLinGrad4() {this.runTest("2134", getLinGrad(144));}
+	@Test public void testLinGrad5() {this.runTest("2135", getLinGrad(180));}
+	@Test public void testLinGrad6() {this.runTest("2136", getLinGrad(216));}
+	@Test public void testLinGrad7() {this.runTest("2137", getLinGrad(252));}
+	@Test public void testLinGrad8() {this.runTest("2138", getLinGrad(288));}
+	@Test public void testLinGrad9() {this.runTest("2139", getLinGrad(324));}
+
 	
 	// polar theta
 	@Test public void testPolarTheta0() 	{ this.runTest("2201", new PolarTheta(0, 0, 0)); }
@@ -232,10 +290,28 @@ public class TestOperationIntegration {
 	private OperationNode YCoord() {
 		return new LinearGradient(0, 1, 0, -1);
 	}
-	
 	// xcoord
 	@Test public void testXCoord()	{this.runTest("2500", XCoord());}
 	@Test public void testYCoord()	{this.runTest("2600", YCoord());}
+	
+	// ellipse
+	Ellipse getEllipse(double deg, double size) {
+		double rad = Math.PI * deg / 180.0;
+		double x0 = Math.sin(rad) / 2.0;
+		double y0 = Math.cos(rad) / 2.0;
+		return new Ellipse(x0, y0, -x0, -y0, size);
+	}
+	@Test public void testEllipse0() {this.runTest("2700", getEllipse(0, 0.5));}
+	@Test public void testEllipse1() {this.runTest("2701", getEllipse(36, 0.5));}
+	@Test public void testEllipse2() {this.runTest("2702", getEllipse(72, 0.5));}
+	@Test public void testEllipse3() {this.runTest("2703", getEllipse(108, 0.5));}
+	@Test public void testEllipse4() {this.runTest("2704", getEllipse(144, 0.5));}
+	@Test public void testEllipse5() {this.runTest("2705", getEllipse(180, 0.5));}
+	@Test public void testEllipse6() {this.runTest("2706", getEllipse(216, 0.5));}
+	@Test public void testEllipse7() {this.runTest("2707", getEllipse(252, 0.5));}
+	@Test public void testEllipse8() {this.runTest("2708", getEllipse(288, 0.5));}
+	@Test public void testEllipse9() {this.runTest("2709", getEllipse(324, 0.5));}
+	@Test public void testEllipse10() {this.runTest("2710", getEllipse(360, 1.0));}
 	
 	// Unary Op
 	@Test public void testAbs()		{this.runTest("3000", new Absolute(XCoord()));}

@@ -77,7 +77,7 @@ _What is the difference between the algorithms?:_
 
 * **-o/--output <string>**
 
-	By default Vash will write its output to "output.png" in the current directory, overwriting anything by that name already there.  Use this option to specify a different output file.  Supported extensions are "png", "jpg", and "bmp".  Vash will automatically select the correct format, based on the extension.
+	By default Vash will write its output to "output.png" in the current directory, overwriting anything by that name already there.  Use this option to specify a different output file.  Supported extensions are "png", "jpg", and "bmp".  Vash will automatically select the correct format, based on the extension.  You may also specify a dash "-" to write the output file to stdout.  The format in this case will be assumed to be png.
 
 * **-w/--width <int>**
 * **-h/--height <int>**

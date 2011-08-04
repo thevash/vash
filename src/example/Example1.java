@@ -1,6 +1,10 @@
 package example;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 import vash.Vash;
 
@@ -33,15 +37,36 @@ public class Example1 {
 		int height = 128;
 		
 		// Use the high level interface
-		BufferedImage img1 = Vash.createImage(algorithm, data, width, height);
-		
-		// The same interface is available as bytes.
-		BufferedImage img2 = Vash.createImage(algorithm, data.getBytes(), width, height);
+		BufferedImage img1 = null, img2 = null, img3 = null;
+		try {
+			img1 = Vash.createImage(algorithm, data, width, height);
 
-		// these two images will be identical
+			// The same interface is available for bytes data.
+			img2 = Vash.createImage(algorithm, data.getBytes(), width, height);
+
+			// And and for InputStreams.
+			try {
+				InputStream dataStream = new ByteArrayInputStream(data.getBytes());
+				img3 = Vash.createImage(algorithm, dataStream, width, height);
+			} catch(IOException e) {
+				// An IOException will not be raised for a ByteArrayInputStream so we
+				//	simply ignore it.  In the general case though, the InputStream method 
+				//	may fail for disk/network errors and should be handled accordingly.
+			}
+		} catch(NoSuchAlgorithmException e) {
+			// Vash makes heavy use of the system's crytographic primitives, including
+			//	SHA-512 and SHA-256, which were under export regulations some years ago.
+			//	Everything we need should be present on any modern machine, so this should
+			//	never get thrown in practice.
+			System.err.println("Missing cryptographic primitives: " + e.toString());
+			System.exit(1);
+		}
+		
+		// these images will all be identical
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				assert(img1.getRGB(x, y) == img2.getRGB(x, y));
+				assert(img1.getRGB(x, y) == img3.getRGB(x, y));
 			}
 		}
 	}
