@@ -72,6 +72,10 @@ _How do I use it?:_
 
 	A file while we will read fully and use as the input data.  Specifying - here will cause us to read from stdin.
 
+Only one of --data and --file is required.  If both, or more than one of either, are specified Vash will emit an error.
+
+###Optional Arguments:
+
 * ** -s/--salt <string>**
 
 	A Base64 encoded salt for use with the algorithm.  The salt will be padded with 0's or truncated to make it the correct length for the algorithm.  A different salt will produce a different image for the same algorithm id and data.
@@ -79,9 +83,6 @@ _How do I use it?:_
 * **-S/--salt-file**
 
 	Provide the salt bytes from a file.  Only as many bytes as are needed will be read from the file.  Specify - to read from stdin.  The salt file and data file should never be set to the same source.
-
-
-###Optional Arguments:
 
 * **-o/--output <string>**
 
