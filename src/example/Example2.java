@@ -29,12 +29,7 @@ public class Example2 {
 		// users of our library to upgrade Vash (e.g. for performance and API 
 		// improvements) without changing the images they produce, potentially
 		// confusing their users or breaking security invariants.
-		// Currently the only known algorithms are "1" and "1-fast".
-		//
-		// "1-fast" is modestly faster on large data sets, but is less secure:
-		// it uses md5 instead of sha-512 internally.  In general you should use
-		// "1", unless you have specific performance concerns with huge data sets.
-		String algorithm = "1";
+		String algorithm = "1.1";
 		
 		// The seed string is the value that we are hashing.
 		byte[] data = "Foo".getBytes();
